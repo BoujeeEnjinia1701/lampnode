@@ -1,0 +1,17 @@
+# Card metadata consumed by https://designmolecule.com
+name: LampNode
+slug: lampnode
+area: Smart Cities
+status: concept          # concept | design | prototype | tested | released
+shortlisted: false
+pitch: >-
+  An open streetlight controller that dims LED streetlights by schedule and presence, reports faults and hosts other city sensors on the lamp pole.
+problem: >-
+  Streetlights burn at full power all night, faults are reported by residents, and proprietary controllers lock cities into one vendor.
+budget_usd: 150
+difficulty: 3  # 1 easiest, 5 hardest
+hero_image: media/hero.png
+licenses:
+  hardware: CERN-OHL-S-2.0
+  software: MIT
+tags: [smart-cities, open-hardware, cern-ohl-s]
