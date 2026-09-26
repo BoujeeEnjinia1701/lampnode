@@ -1,14 +1,14 @@
 # LampNode
 
-![TRL 2](https://img.shields.io/badge/TRL-2%20of%209-0F766E) ![Hardware: CERN-OHL-S-2.0](https://img.shields.io/badge/hardware-CERN--OHL--S--2.0-111827) ![Software: MIT](https://img.shields.io/badge/software-MIT-111827)
+![TRL 3](https://img.shields.io/badge/TRL-3%20of%209-0F766E) ![Hardware: CERN-OHL-S-2.0](https://img.shields.io/badge/hardware-CERN--OHL--S--2.0-111827) ![Software: MIT](https://img.shields.io/badge/software-MIT-111827)
 
-**Area:** Smart Cities · **TRL:** 2 of 9 (concept formulated) · **Prototype budget:** about $150 USD · **Difficulty:** 3 of 5
+**Area:** Smart Cities · **TRL:** 3 of 9 (proof of concept on paper) · **Prototype budget:** about $150 USD · **Difficulty:** 3 of 5
 
 An open streetlight controller that dims LED streetlights by schedule and presence, reports faults and hosts other city sensors on the lamp pole.
 
 ![LampNode concept](media/hero.png)
 
-[Interactive 3D model](media/viewer.html) · [Concept blueprint (PDF)](media/concept-blueprint.pdf) · [Review note](docs/REVIEW.md)
+[Interactive 3D model](media/viewer.html) · [Concept blueprint (PDF)](media/concept-blueprint.pdf) · [General arrangement LPN-DWG-001 (PDF)](cad/drawings/LPN-DWG-001.pdf) · [Sizing calculations](docs/04-calcs/01-sizing.md) · [Review note](docs/REVIEW.md)
 
 ## Concept rationale
 
@@ -58,27 +58,29 @@ Streetlights burn at full power all night, faults are reported by residents, and
 
 An open streetlight controller that dims LED streetlights by schedule and presence, reports faults and hosts other city sensors on the lamp pole.
 
-A twist-lock controller replaces the photocell on the luminaire and drives its 0 to 10 V dimming input; a sensor head clamped under the arm carries a 24 GHz radar for presence and two powered M12 ports for other sensors; status and faults go out every 15 min over LoRaWAN. First-order estimates (to be checked at TRL 3): a 100 W luminaire drops from about 410 to about 243 kWh per year (about 41 % less), the controller draws about 0.6 W, and the parts cost about $124 against the $150 budget. Not yet met: 347 V and 480 V circuits, DALI-2 D4i dimming, daytime power for hosted sensors on cabinet-switched feeders, and a TALQ bridge; radar range is unverified. See the [requirements](docs/03-requirements.md).
+A twist-lock controller replaces the photocell on the luminaire and drives its 0 to 10 V dimming input; a sensor head clamped under the arm carries a 24 GHz radar for presence and two powered M12 ports for other sensors; status and faults go out every 15 min over LoRaWAN.
+
+TRL 3 calculations ([LPN-CAL-001](docs/04-calcs/01-sizing.md)) put a 100 W luminaire at 40° N at about 432 kWh a year under a photocell and 275 to 285 kWh with the reference presence profile, a saving of 34 to 36 % against a 35 % target. The controller draws 0.68 W on average and the parts cost $130 against the $150 budget. No requirement is clearly missed, but five are at risk on paper: relay inrush, presence detection in rain and wind, the energy saving, the temperature margin in full sun, and power for hosted sensors at high temperature. 347 V and 480 V circuits, DALI-2 D4i dimming and a TALQ bridge are later variants or sibling scope. The design choices are adopted for TRL 3 work under Amish's 2026-09-25 instruction, open for his review ([LPN-DDR-001](docs/decisions/0001-trl2-review-decisions.md)). See the [requirements](docs/03-requirements.md).
 
 Full design precis: [docs/02-concept.md](docs/02-concept.md)
 
 ## Key components
 
-- Twist-lock base for the ANSI C136.41 7-contact receptacle (proposed)
-- Surge protection, isolated 12 V power supply and fail-on relay
-- Energy metering (indicative, not revenue grade)
-- STM32WL-class controller with LoRaWAN radio (shared with FieldNode), clock and tilt sensor
+- Twist-lock base for the ANSI C136.41 7-contact receptacle
+- 385 V class surge stage, isolated 12 V power supply and a normally closed (fail-on) relay closed at the voltage zero crossing
+- Energy metering (indicative, not revenue grade), calibrated once at build
+- STM32WL-class controller with LoRaWAN radio (shared with FieldNode), TCXO clock and tilt sensor
 - 0 to 10 V dimming output and ambient light sensor
-- Sensor head under the arm with a 24 GHz radar presence sensor
-- Two sealed M12 expansion ports, 12 V SELV, 3 W total
+- Sensor head under the arm with a 24 GHz radar presence sensor with direction (I/Q) output
+- Two sealed 5-pole M12 expansion ports, 12 V SELV, 3 W total
 
-The working bill of materials is in [bom/bom.csv](bom/bom.csv).
+The parametric model is in [cad/src/model.py](cad/src/model.py), with STEP and STL exports in `cad/step/` and `cad/stl/`. The working bill of materials is in [bom/bom.csv](bom/bom.csv).
 
 ## Safety
 
 > Mains wiring must be done or checked by a qualified electrician and follow local electrical code. LampNode connects to up to 277 V AC in the luminaire socket; a prototype must not go on a public lighting network until it has passed the tests the asset owner requires. Street furniture and pole mounts must be installed only with the asset owner's permission, by trained crews, with fall protection and traffic management as local rules require.
 >
-> A controller fault must never leave a street dark: the relay fails on, and light levels are set by the road owner, not by LampNode. Privacy by design: the radar reports motion only; no images, audio recordings or personal identifiers leave the device.
+> A controller fault must never leave a street dark: the relay fails on, and light levels are set by the road owner, not by LampNode. The socket has no earth contact, so surge protection is line to neutral only. Privacy by design: the radar reports motion only; no images, audio recordings or personal identifiers leave the device.
 
 ## Repository layout
 

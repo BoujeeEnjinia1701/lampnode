@@ -1,0 +1,161 @@
+key,value,unit
+"night hours per year at 40 N, sunset to sunrise",4323,h
+mean night length,11.84,h
+longest night / shortest night,14.68 / 8.99,h
+"photocell, full power",432.3,kWh/yr
+schedule only (50 % from 23:00 to 05:00),324.4,kWh/yr
+  schedule saving,24.97,%
+"presence profile, dimmed hours per year",2745,h
+"  dimmed hours per night, mean",7.52,h
+"presence profile, luminaire only",269,kWh/yr
+controller energy per year,5.946,kWh/yr
+presence profile with controller,274.9,kWh/yr
+"R7 saving, ideal driver",36.4,%
+"  margin over the 35 % target, ideal driver",1.403,points
+"presence profile, luminaire only, dimmed driver model",278.8,kWh/yr
+"presence profile with controller, dimmed driver model",284.7,kWh/yr
+"R7 saving, dimmed driver model (K0 = 0.06)",34.14,%
+"  shortfall against the 35 % target, dimmed driver model",0.8636,points
+"energy saved per year, dimmed driver model",147.6,kWh
+"TRL 2 method, presence luminaire energy (check)",235.7,kWh/yr
+time from detection at 15 m to about 3 m from the pole,8.571,s
+duration of one isolated pedestrian event,69.57,s
+isolated events per hour equal to 15 % boost,7.762,per h
+"R7 saving at 30 events per hour, dimmed driver",22.02,%
+60 N: night hours per year,4277,h
+60 N: photocell energy,427.7,kWh/yr
+"60 N: saving, dimmed driver model",31.83,%
+night fraction of the year,0.4935,
+"relay coil average (0.40 W, day only)",0.2026,W
+radar and head board average (night only),0.1135,W
+12 V side subtotal,0.4161,W
+"shunt loss, reference lamp at 120 V, averaged",0.8461,mW
+R10 average from the mains,0.6788,W
+"12 V load, day, ports at 3 W",3.5,W
+"12 V load, night, ports at 3 W",3.33,W
+12 V peak with radio transmit,3.9,W
+supply loading at 25 to 50 C,78,%
+"steady current, 400 W at 100 V and PF 0.90",4.444,A
+"steady current, reference 100 W at 120 V",0.9259,A
+"reference driver inrush at 277 V, random closing",72.26,A
+"four 100 W drivers on one relay, random closing",289,A
+"zero-cross closing, one driver, 50 Hz, 0.5 ms error",17.09,A
+"zero-cross closing, one driver, 60 Hz, 0.5 ms error",20.48,A
+switching cycles over 20 years at 2 per day,14600,cycles
+12-bit PWM step on 0 to 10 V,2.441,mV
+1 % dimming step,100,mV
+"drivers per output at 2 mA control current, 10 mA sink",5,drivers
+"sink transistor dissipation at 10 mA, 10 V",0.1,W
+"32 kHz crystal (+-20 ppm) held at 25 C, 30 days",51.84,s
+"32 kHz crystal (+-20 ppm) held at -10 C, 30 days",159.8,s
+"32 kHz crystal (+-20 ppm) held at -30 C, 30 days",318.4,s
+"32 kHz crystal (+-20 ppm) held at 70 C, 30 days",230.3,s
+"TCXO RTC (+-3.5 ppm, -40 to 85 C), 30 days",9.072,s
+radar height above the road (model),7.725,m
+beam center reaches the road at,16.57,m
+pedestrian at 15 m: depression angle,24.15,deg
+car or cyclist at 25 m: depression angle,15.7,deg
+"pedestrian coverage inside the half-power beam, near",7.469,m
+"pedestrian coverage inside the half-power beam, far",47.85,m
+slant range to pedestrian at 15 m,16.44,m
+"received power, pedestrian at 15 m",-92.73,dBm
+"noise floor (10 Hz, 35 dB effective noise figure)",-129,dBm
+"SNR, pedestrian at 15 m",36.27,dB
+"slant range at 15 dB SNR, pedestrian on boresight",55.93,m
+same with 6 dB two-way beam-edge loss,39.6,m
+"Doppler, pedestrian 1.4 m/s approaching",205.5,Hz
+"Doppler, cyclist 5 m/s approaching",774.2,Hz
+"Doppler, car 50 km/h approaching",2151,Hz
+"Doppler, drizzle 2 m/s falling (receding)",135.9,Hz
+"Doppler, heavy rain 7 m/s falling (receding)",475.8,Hz
+"detection to full output (two 128 ms frames, link, driver 0.3 s)",0.626,s
+warning before a pedestrian at 15 m reaches the pole,10.71,s
+"current range, 10 W at 305 V PF 0.5 to 400 W at 100 V",66 mA to 4.44 A,
+shunt signal at minimum current (2 mOhm),0.1311,mV
+ratio of full scale to minimum signal,168.7,:1
+shunt dissipation at 4.44 A,0.03951,W
+  metering IC over 1000:1,0.5,%
+  shunt tempco 50 ppm/K over 50 K,0.25,%
+  divider tempco,0.1,%
+  phase error 0.1 deg at PF 0.5,0.3023,%
+  bench reference for one-point calibration,0.5,%
+"error with one-point calibration, RSS",0.8148,%
+"error with one-point calibration, worst-case sum",1.652,%
+"worst-case sum without calibration (1 % shunt, 0.2 % divider)",2.352,%
+24-byte status at SF7: time on air,82.18,ms
+  96 per day at SF7,7.889,s/day
+24-byte status at SF9: time on air,267.3,ms
+  96 per day at SF9,25.66,s/day
+24-byte status at SF10: time on air,493.6,ms
+  96 per day at SF10,47.38,s/day
+24-byte status at SF12: time on air,1974,ms
+  96 per day at SF12,189.5,s/day
+EU868 1 % duty cycle: off time after one SF9 status,26.46,s
+6-byte fault message at SF9,185.3,ms
+"last-gasp energy at SF10, 22 dBm",0.1441,J
+"0.22 F supercapacitor, 5.0 to 3.6 V, usable",1.324,J
+last-gasp margin,9.191,x
+supercapacitor charge time at 20 mA,55,s
+8/20 us wave: charge per ampere of peak,23.54,us
+"MOV energy at 5 kA, clamping about 1000 V (385 V class)",117.7,J
+"MOV energy at 10 kA, clamping about 1150 V (385 V class)",270.7,J
+"MOV continuous rating over 305 V maximum, 320 V class",4.918,%
+"MOV continuous rating over 305 V maximum, 385 V class",26.23,%
+projected area in sun at 60 deg elevation,98.74,cm2
+"solar gain, absorptance 0.35",3.456,W
+outer area,337.9,cm2
+"film coefficient, still air plus radiation",12.41,W/(m2 K)
+"internal dissipation, day, ports unloaded",0.7944,W
+"internal dissipation, day, ports at 3 W",1.544,W
+"shell rise over 45 C ambient, ports unloaded",13.32,K
+"interior (shell + 5 K), ports unloaded",63.32,C
+"interior (shell + 5 K), ports at 3 W",64.53,C
+supply capacity at that interior temperature (derating assumption),3.547,W
+12 V peak demand,3.9,W
+"one port at 3 W, 10 m of 0.34 mm2 cable: drop",0.2529,V
+  as a share of 12 V,2.108,%
+controller to head cable current,0.2692,A
+  drop over 1 m,0.02723,V
+"  controller: dome, ASA",0.07285,kg
+"  controller: base, PC at 35 % of the solid envelope, brass blades",0.09695,kg
+  controller: power supply module,0.05,kg
+  controller: relay,0.02,kg
+  controller: surge stage and fuse,0.03,kg
+  controller: controller board and supercapacitor,0.03,kg
+  controller: antenna and light pipe,0.01,kg
+"  controller: potting, screws",0.03,kg
+"  head: enclosure, PC",0.1571,kg
+  head: radar,0.02,kg
+  head: head board,0.02,kg
+  head: two M12 ports,0.03,kg
+  head: two band clamps and bracket,0.15,kg
+  head: M12 port and 1 m cable,0.07,kg
+controller mass,0.3398,kg
+sensor head with clamps and cable,0.4471,kg
+BOM lines,16,
+controller parts (items 1 to 9),68,USD
+"sensor head, cable and ports (items 10 to 15)",56,USD
+hardware and consumables (item 16),6,USD
+BOM total,130,USD
+budget_usd (project.yaml),150,USD
+margin,20,USD
+payback on parts at $0.10/kWh,8.81,years
+payback on parts at $0.25/kWh,3.524,years
+
+requirement,title,result,status
+R1,Fit the socket,Representative ANSI C136.41 base in the model; fit and 5 min change not checkable on paper,Not verifiable at TRL 3
+R2,Mains range,Supply 85 to 305 V; 385 V class MOV; 120 to 277 V scope (DDR item 9),Met (design review)
+R3,Switch the luminaire,"4.44 A steady at 400 W; inrush 72 A per 100 W driver, 289 A for four; about 20 A with zero-cross closing",At risk
+R4,Dim the luminaire,2.4 mV steps; 10 mA sink = 5 drivers at 2 mA; D4i is a later variant (DDR item 5),Met (design review)
+R5,Schedule without the network,"Crystal: 160 s at -10 C, 318 s at -30 C per 30 days (not met); TCXO clock: 9 s",Met on paper with the TCXO clock
+R6,Detect presence,Beam covers 7.5 to 48 m; SNR 36 dB at 15 m; 0.63 s to full; clutter and rain unverified,At risk
+R7,Save energy,"36.4 % ideal driver, 34.1 % dimmed driver model, target 35 %",At risk
+R8,Measure energy,1.65 % worst case with one-point calibration (2.35 % without),Met on paper (calibration required)
+R9,Report faults,Last gasp 0.144 J against 1.32 J stored; 15 min status,Met (design review)
+R10,Self-consumption,0.68 W average,Met on paper
+R11,Environment,Interior 63 to 65 C at 45 C in sun (70 C rating); MOV 118 J at 5 kA; IP66 and surge need tests,At risk
+R12,Fail safe,"NC relay, open 0 to 10 V = full, coil needs a toggling drive, day decision needs clock AND light sensor",Met (design review)
+R13,Host other sensors,0.25 V drop at 10 m; 3.90 W peak against 3.55 W derated supply at 65 C,At risk
+R14,Privacy,"Doppler radar, no image; presence counts only",Met (design review)
+R15,Secure and open,"LoRaWAN 1.0.4, open payload; 25.7 s/day at SF9; TALQ in CityTwin (DDR item 10)",Met (design review)
+R16,Affordable,$130.00 against $150,Met

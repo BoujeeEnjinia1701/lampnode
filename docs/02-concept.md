@@ -3,7 +3,7 @@ doc_id: LPN-PRC-001
 title: LampNode design precis
 project: LampNode
 doc_type: Design precis
-version: "0.2"
+version: "0.3"
 status: Draft
 date: '2026-09-25'
 author: Amish Chadha
@@ -17,24 +17,31 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Concept for TRL 2, main components, first-order numbers, design choices, safety and open questions
+- version: "0.3"
+  date: '2026-09-25'
+  author: Amish Chadha
+  change: TRL 3 update. Design choices adopted for TRL 3 under Amish's 2026-09-25 instruction, open for his review (LPN-DDR-001); numbers replaced by LPN-CAL-001; relay, clock, surge stage, radar and port changes; parametric model and drawing LPN-DWG-001
 ---
 
 # LampNode design precis
 
 ## Summary
 
-LampNode is a twist-lock controller that replaces the photocell on top of an LED streetlight, plus a small sensor head clamped under the lamp arm. The controller switches and dims the luminaire over its standard 0 to 10 V input, follows a night schedule held on the device, raises the light when the sensor head's radar detects someone approaching, measures the lamp's energy and reports faults over LoRaWAN. The sensor head also offers two powered, sealed ports for other city sensors. For a 100 W luminaire on a residential street, the estimated annual use falls from about 410 kWh to about 243 kWh (about 41 % less), for about $124 in parts. All figures are TRL 2 estimates to be checked at TRL 3.
+LampNode is a twist-lock controller that replaces the photocell on top of an LED streetlight, plus a small sensor head clamped under the lamp arm. The controller switches and dims the luminaire over its standard 0 to 10 V input, follows a night schedule held on the device, raises the light when the sensor head's radar sees someone approaching, measures the lamp's energy and reports faults over LoRaWAN. The sensor head also offers two powered, sealed ports for other city sensors.
 
-Figure 1 (`media/hero.png`) shows LampNode on a 7.8 m street pole with a 1.75 m person for scale; Figure 2 (`media/exploded.png`) numbers the parts to match `bom/bom.csv`; Figure 3 (`media/cutaway.png`) shows the inside of the controller; Figure 4 (`media/flow.png`) shows the annual energy estimate.
+The TRL 3 calculations (LPN-CAL-001) put the energy of a 100 W luminaire at 40° N at about 432 kWh a year under a photocell and about 275 to 285 kWh with the reference presence profile, a saving of **34.1 to 36.4 %** against the 35 % target of R7. The TRL 2 estimate of about 41 % assumed nights that were too uniform. The controller draws 0.68 W on average, and the parts cost $130.00 against the $150 budget. Five requirements are at risk on paper (R3, R6, R7, R11, R13); none is clearly not met. The design choices below are adopted for TRL 3 work under Amish's 2026-09-25 instruction, open for his review (LPN-DDR-001).
+
+Figure 1 (`media/hero.png`) shows LampNode on a 7.8 m street pole with a 1.75 m person for scale; Figure 2 (`media/exploded.png`) numbers the parts to match `bom/bom.csv`; Figure 3 (`media/cutaway.png`) shows the inside of the controller; Figure 4 (`media/flow.png`) shows the annual energy; Figure 5 (`cad/drawings/LPN-DWG-001.pdf`) is the general arrangement at Rev P1, generated from `cad/src/model.py`.
 
 ## How it works
 
-1. **At dusk** the light sensor sees the light level fall below a set threshold, or the astronomical clock reaches dusk, whichever the policy chooses. The relay closes and the lamp starts at the scheduled level.
-2. **During the night** the controller steps the 0 to 10 V output through the schedule that the road owner set, for example full output until 22:00, then a lower floor.
-3. **When someone approaches** the radar in the sensor head sees motion along the street. The head tells the controller over the M12 cable, and the controller ramps the lamp to full output within 1 s, holds it for a set time and ramps back down.
-4. **Every 15 min** the controller sends a short LoRaWAN status message: energy, power, voltage, dimming level, presence count and fault flags. Schedules and settings come back as downlinks, but the lamp never depends on the network to run.
-5. **When something goes wrong** the controller sends a fault message at once: lamp out, lamp burning in daylight, cycling, pole tilted or knocked down, or mains lost (a supercapacitor holds enough energy for a last message). A gateway such as TwinKit, or any LoRaWAN network server, flags a node that goes silent.
-6. **If the controller fails** the relay drops to its closed state and an open 0 to 10 V line leaves typical drivers at full output, so the lamp stays on.
+1. **At dusk** the light sensor sees the light level fall below a set threshold, or the astronomical clock reaches dusk. The controller treats it as day only when both the clock and the light sensor say day, so a failed sensor or a wrong clock leaves the lamp on. The lamp starts at the level the road owner set; the default is full output.
+2. **During the night** the controller steps the 0 to 10 V output through the road owner's schedule, for example full output until 22:00, then a lower floor.
+3. **When someone approaches** the radar in the sensor head sees motion toward the lamp. The radar has I/Q (direction) output, so rain, which always moves away from a downward-looking beam, is ignored. The head tells the controller over the M12 cable, and the controller ramps the lamp to full output in about 0.63 s, holds it for a set time and ramps back down.
+4. **Every 15 min** the controller sends a 24-byte LoRaWAN status message: energy, power, voltage, dimming level, presence count and fault flags. Schedules and settings come back as downlinks, and the network also sets the clock, but the lamp never depends on the network to run. A TCXO real-time clock keeps drift under 10 s a month without the network.
+5. **When something goes wrong** the controller sends a fault message at once: lamp out, lamp burning in daylight, cycling, pole tilted or knocked down, or mains lost (a 0.22 F supercapacitor holds about 9 times the energy of a last message). A gateway such as TwinKit, or any LoRaWAN network server, flags a node that goes silent.
+6. **If the controller fails** the relay closes and the lamp stays on. The relay coil is driven through a charge pump that needs a toggling signal from the controller, so a stopped or hung controller drops the coil. An open 0 to 10 V line leaves typical drivers at full output.
+7. **When the relay switches** it closes at a zero crossing of the mains voltage, timed from the metering IC, which cuts the LED driver inrush from about 72 A to about 20 A.
 
 ## Main components
 
@@ -42,111 +49,98 @@ Numbers match Figure 2 and `bom/bom.csv`.
 
 | No. | Component | Role |
 | --- | --- | --- |
-| 1 | Twist-lock base, 7-contact | ANSI C136.41 plug: line, neutral, switched load, two dimming contacts and two auxiliary contacts |
-| 2 | Dome cover | UV-stabilized polycarbonate or ASA, with a clear window over the light sensor; about 90 mm diameter, 100 mm tall overall |
-| 3 | Surge protection and fuse | Thermal fuse, MOVs and a gas discharge tube on the mains side |
-| 4 | Isolated power supply | 100 to 305 V AC in, 12 V out, 5 W; creates the SELV side that feeds the electronics, the dimming output and the expansion ports |
-| 5 | Fail-on relay | Normally closed contact held open by the coil in daytime, so a dead controller leaves the lamp on |
-| 6 | Energy metering | Single-phase metering IC with a shunt on the mains side, linked to the controller through a digital isolator |
-| 7 | Controller and LoRaWAN radio | STM32WL-class module shared with FieldNode, real-time clock, accelerometer, 0 to 10 V output stage, supercapacitor for the last message |
+| 1 | Twist-lock base, 7-contact | ANSI C136.41 plug: line, neutral and switched load blades; four low-voltage contacts for dimming and two auxiliary lines. There is no earth contact |
+| 2 | Dome cover | UV-stabilized ASA, 90 mm diameter, 72 mm tall, with a clear window over the light sensor; 97 mm tall with the base |
+| 3 | Surge protection and fuse | Thermal fuse and a thermally protected 20 mm, 385 V class varistor line to neutral; TVS diodes on the low-voltage leads |
+| 4 | Isolated power supply | 85 to 305 V AC in, 12 V out, 5 W; creates the SELV side that feeds the electronics, the dimming output and the expansion ports |
+| 5 | Fail-on relay | Normally closed, 16 A, rated for 80 A inrush or better; coil (about 0.4 W) energized in daytime only |
+| 6 | Energy metering | Single-phase metering IC with a 2 mΩ shunt on the mains side, linked to the controller through a digital isolator; one-point calibration at build |
+| 7 | Controller and LoRaWAN radio | STM32WL-class module shared with FieldNode, TCXO real-time clock, accelerometer, 0 to 10 V output stage, charge-pump coil drive, 0.22 F supercapacitor for the last message |
 | 8 | Antenna | Sub-GHz antenna inside the dome, above the luminaire's metal body |
 | 9 | Light sensor and pipe | Ambient light sensor under the dome window, for dusk and dawn and for day-burner checks |
-| 10 | M12 port and cable | 4-pole M12 on the controller base and about 1 m of cable along the arm to the sensor head: 12 V and a two-wire serial link |
-| 11 | Sensor head enclosure | IP66 box about 120 x 90 x 60 mm clamped under the arm near the luminaire |
-| 12 | 24 GHz radar presence sensor | Doppler motion sensor tilted about 25° below horizontal along the street; motion and speed only |
+| 10 | M12 port and cable | 5-pole M12 on the side of the base and about 1 m of cable along the arm to the sensor head: 12 V and a two-wire serial link |
+| 11 | Sensor head enclosure | IP66 box 120 x 90 x 60 mm clamped under the arm, 470 mm from the receptacle toward the pole |
+| 12 | 24 GHz radar presence sensor | Doppler module with I/Q output, tilted 25° below horizontal along the street; motion, speed and direction only |
 | 13 | Sensor head board | Small microcontroller that turns the radar signal into presence events, and switches power to the expansion ports |
-| 14 | Expansion ports (2) | Sealed M12 sockets with the FieldNode sensor pinout (proposed), 12 V SELV, 3 W total |
-| 15 | Arm band clamps | Two stainless band clamps and a bracket; no drilling of the arm |
+| 14 | Expansion ports (2) | Sealed 5-pole M12 sockets with the FieldNode sensor port pinout (pinout still open at FieldNode), 12 V SELV, 3 W total |
+| 15 | Arm band clamps | Two stainless band clamps for 50 to 80 mm arms and a bracket; no drilling of the arm |
 
-The luminaire, its receptacle, the arm and the pole are existing street furniture and are not part of LampNode.
+The luminaire, its receptacle, the arm and the pole are existing street furniture and are not part of LampNode. The model shows the receptacle and a length of arm as grey reference parts.
 
-## First-order numbers
+## Numbers at TRL 3
 
-All values are estimates at TRL 2, with assumptions stated. They will be checked at TRL 3.
+All values come from LPN-CAL-001 and `docs/04-calcs/sizing.py`. They are calculations with typical part values, not measurements.
 
-### Energy per luminaire
+*Table 1. Annual energy for one 100 W luminaire at 40° N (4,323 h a year).*
 
-Assumptions: 100 W luminaire; about 4,100 h of darkness per year, or about 11.2 h per night on average (about 366 night-equivalents); luminaire power proportional to light output.
+| Case | Energy per year | Saving |
+| --- | --- | --- |
+| Photocell, full power | 432 kWh | |
+| Schedule only (50 % from 23:00 to 05:00) | 324 kWh | 25.0 % |
+| Reference presence profile with controller use, ideal driver | 275 kWh | 36.4 % |
+| Same, dimmed driver model | 285 kWh | 34.1 % |
 
-Table 1. Annual energy for one 100 W luminaire (estimates)
+The saving depends mostly on traffic. With the dimmed driver model it is 40.4 % with no traffic, 34.4 % at 8 isolated passes an hour and 22.0 % at 30. At 60° N it falls to 31.8 %. The saving is of the same order as the 49 % that Jägerbrand estimated for a dimming schedule on Swedish roads ([Jägerbrand, 2016](https://www.mdpi.com/1996-1073/9/5/357)).
 
-| Case | Profile | Energy per night | Energy per year | Saving |
-| --- | --- | --- | --- | --- |
-| Photocell, full power | 100 % all night | 1.12 kWh | about 410 kWh | |
-| Schedule only | 100 %, but 50 % from 23:00 to 05:00 | 0.82 kWh | about 300 kWh | about 27 % |
-| Schedule and presence | 100 % to 22:00; 30 % floor from 22:00 to 06:00 with full output 15 % of that time | 0.64 kWh | about 236 kWh | about 42 % |
-| Same, with controller use | adds 0.8 W for 8,760 h (about 7 kWh) | | about 243 kWh | **about 41 %** |
+*Table 2. Other key figures.*
 
-The presence case works out as 3.2 h x 100 W + 8 h x (0.15 x 100 W + 0.85 x 30 W) = 320 Wh + 324 Wh = 644 Wh per night. The saving is of the same order as the 49 % that Jägerbrand estimated for a dimming schedule on Swedish roads ([Jägerbrand, 2016](https://www.mdpi.com/1996-1073/9/5/357)). Drivers are less efficient when dimmed, so the real saving may be a few percentage points lower.
-
-### Self-consumption
-
-Table 2. Average power drawn by LampNode (estimates)
-
-| Load | Average |
-| --- | --- |
-| Controller and radio, mostly asleep | about 0.05 W |
-| Metering IC | about 0.05 W |
-| Relay coil, energized only in daytime (about 12.8 h of 24 h) | about 0.13 W |
-| Radar and head board, on only at night | about 0.12 W |
-| Subtotal on the 12 V side | about 0.35 W |
-| From the mains, at about 70 % light-load supply efficiency, plus about 0.1 W no-load loss | **about 0.6 W** |
-
-The energy estimate uses 0.8 W to leave margin. On a cabinet-switched feeder the controller is unpowered in daytime, the relay coil draws nothing, and self-consumption falls further.
-
-### Radio
-
-A status message of about 24 bytes at spreading factor 9 takes about 0.2 s on air (estimate). Ninety-six messages a day use about 20 s of airtime, about 0.02 % of the day, well inside the 1 % duty cycle that applies in the EU868 sub-bands. Fault messages are rare and short.
-
-### Presence geometry
-
-With the radar at about 7.7 m and tilted about 25° below horizontal, the beam center reaches the ground about 16.5 m along the street (7.7 m / tan 25°). A pedestrian 15 m away is about 17 m from the sensor in a straight line. Whether a low-cost 24 GHz Doppler module detects a walking person reliably at that range, in rain and with passing cars, is the main technical risk (R6 at risk).
-
-### Cost, payback and mass
-
-- Parts: about $124 for the controller and one sensor head (`bom/bom.csv`); the controller alone is about $65.
-- Energy saving: about 167 kWh per year. At $0.10 to $0.25 per kWh this is about $17 to $42 per year, so the parts cost pays back in about 3 to 7 years (estimate), before installation labor. Fitting during planned photocell replacement keeps the labor cost low.
-- Mass: controller about 0.25 kg, sensor head with clamps about 0.45 kg (estimates).
+| Quantity | Value | Requirement |
+| --- | --- | --- |
+| Average draw from the mains | 0.68 W | R10 met |
+| 12 V peak with both ports at 3 W | 3.90 W, against 3.55 W available at 65 °C | R13 at risk |
+| Inrush, 100 W driver at 277 V | 72 A at random closing, about 20 A at zero-cross closing | R3 at risk |
+| Clock drift without the network, 30 days | 9.1 s with the TCXO clock (160 s at -10 °C with a plain crystal) | R5 met on paper |
+| Radar | Beam covers 7.5 to 47.9 m for a walking person; 36 dB signal to noise at 15 m; 0.63 s to full | R6 at risk |
+| Metering error | 1.65 % worst case with a one-point calibration | R8 met on paper |
+| Status airtime | 267 ms per message, 25.7 s a day at SF9 | R15 |
+| Interior temperature at 45 °C in sun | 63 to 65 °C | R11 at risk |
+| Varistor energy at 5 kA | 118 J | R11 |
+| Mass | Controller 0.34 kg; head with clamps and cable 0.45 kg | |
+| Parts cost | $130.00 (controller $68.00, head $56.00, hardware $6.00) | R16 met |
+| Payback on parts | 3.5 to 8.8 years at $0.25 to $0.10 per kWh, before labor | |
 
 ## Key design choices
 
-Each choice below is **proposed, awaiting Amish**. Options and a recommendation for each are in `docs/REVIEW.md`.
+Each choice below is **adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for his review** (LPN-DDR-001). None is decided by Amish.
 
 1. **Socket:** ANSI C136.41 7-contact first, since it is the photocontrol socket widely used on existing roadway luminaires in North America and suits retrofits; a Zhaga Book 18 variant later for newer D4i luminaires.
-2. **Presence sensor:** 24 GHz Doppler radar, which senses motion through a plastic cover, is not blinded by heat and cannot form an image; PIR is the lower-cost alternative.
-3. **Sensor head link:** a cable from the controller to a head under the arm, so one mains connection powers both. Alternatives: a Zhaga bottom-socket module, or a solar FieldNode head linked by radio.
-4. **Radio:** LoRaWAN on the STM32WL-class module shared with FieldNode and TwinKit, rather than a proprietary mesh.
-5. **Dimming:** 0 to 10 V in the base design; DALI-2 D4i on the auxiliary contacts as a later variant.
+2. **Presence sensor:** 24 GHz Doppler radar, which senses motion through a plastic cover, is not blinded by heat and cannot form an image; schedule-only operation stays as a firmware mode.
+3. **Sensor head link:** a cable from the controller to a head under the arm, so one mains connection powers both.
+4. **Radio:** LoRaWAN on the STM32WL-class module shared with FieldNode and TwinKit.
+5. **Dimming:** 0 to 10 V only; DALI-2 D4i on the auxiliary contacts only if a partner's stock needs it.
 6. **Fail-on relay:** normally closed contact, energized to turn the lamp off in daytime.
-7. **Hosted sensor power:** 12 V SELV, 3 W total on two ports, available whenever the luminaire feed is live.
+7. **Hosted sensor power:** 12 V SELV, 3 W total on two ports, whenever the luminaire feed is live. Sibling sensors such as AirStreet and NoiseMap stay on FieldNode solar and may use LampNode power as an option.
 8. **Default policy:** the controller ships with photocell-equivalent behavior (full output all night); any dimming profile is set by the road owner.
+9. **Mains range:** 120 to 277 V; a 347 V and 480 V variant later if a partner needs it.
+10. **Interoperability:** open LoRaWAN and a published payload; a TALQ bridge belongs to CityTwin.
+
+The TRL 3 calculations add engineering proposals, awaiting Amish's confirmation (LPN-DDR-001 O4 to O8): the TCXO clock, the high-inrush relay with zero-cross closing, the 385 V surge stage without a gas discharge tube, the charge-pump coil drive and two-signal day logic, the I/Q radar and 5-pole M12 ports to match FieldNode.
 
 ## Safety
 
-> **Safety:** LampNode connects to mains voltage (up to 277 V AC, 305 V maximum) inside the luminaire's receptacle. Only qualified electricians may fit or remove it, with the circuit isolated where local rules require. The prototype must not be plugged into a public lighting network until it has passed the surge, insulation and safety tests that the asset owner requires.
+> **Safety:** LampNode connects to mains voltage (up to 277 V AC nominal, 305 V maximum) inside the luminaire's receptacle. Only qualified electricians may fit or remove it, with the circuit isolated where local rules require. The prototype must not be plugged into a public lighting network until it has passed the surge, insulation and safety tests that the asset owner requires.
 
 > **Safety:** Work on streetlights is work at height beside traffic. Use a bucket truck or a suitable access platform, fall protection and traffic management as local rules require, and only with the asset owner's permission.
 
-> **Safety:** A controller fault must never leave a street dark. The fail-on relay and the open-line behavior of the 0 to 10 V driver must be checked on every driver model used. Light levels and dimming floors are the road owner's decision, not LampNode's.
+> **Safety:** A controller fault must never leave a street dark. The normally closed relay, the charge-pump coil drive and the open-line behavior of the 0 to 10 V driver must be checked on every driver model used. Light levels and dimming floors are the road owner's decision, not LampNode's.
 
-> **Safety:** Surges on long street lighting feeders can destroy electronics and start fires. The surge stage, fuse and housing material must be chosen and tested for this at TRL 3 and later.
+> **Safety:** Surges on long street lighting feeders can destroy electronics and start fires. The socket has no earth contact, so LampNode clamps line to neutral only; the varistor must be thermally protected and fused, and the housing material flame-rated. Relay contacts welded by inrush would leave a lamp burning in daylight; the day-burner check must report it.
 
-- **Privacy:** the radar reports motion only. No images, audio or personal identifiers are captured or leave the device. Check local data protection law before any deployment.
+- **Privacy:** the radar reports motion, speed and direction only. No images, audio or personal identifiers are captured or leave the device. Check local data protection law before any deployment.
 - **Radio:** 24 GHz radar and sub-GHz LoRa modules must be used within local radio regulations; use certified modules.
 - **Expansion ports:** 12 V SELV only, fused per port. Hosted devices must not connect to mains.
+- **Heat:** in 45 °C sun the inside of the dome reaches about 65 °C; the supercapacitor and supply must be rated for it.
 
-## Open questions for TRL 3
+## Open questions after TRL 3
 
-1. Radar range and false triggers from 7.7 m in rain, wind-blown trees and passing traffic (R6).
-2. Relay rating against the inrush current of the partner's LED drivers (R3).
-3. Surge level and test standard: ANSI C136.2 and the asset owner's specification (R11).
-4. Metering accuracy at low dimmed power, and a simple field calibration method, possibly with CalRig (R8).
-5. Power for hosted sensors on cabinet-switched feeders: a small LiFePO4 buffer in the head, or rely on FieldNode solar cores (R13).
-6. A DALI-2 D4i variant and a Zhaga Book 18 form (R4).
-7. A TALQ bridge in TwinKit or CityTwin (R15).
-8. Whether neighboring lamps should also brighten ahead of a pedestrian, which needs a lamp-to-lamp message path.
-9. Thermal check of the dome in full sun on a dark luminaire top at 45 °C ambient.
+1. Radar false triggers from rain, wind-blown trees and passing traffic, and the real cross-section of a person seen from 7.7 m (R6). Needs a field trial.
+2. A normally closed relay with an 80 A or better inrush rating, and the partner's driver inrush data (R3).
+3. Surge level and test standard: ANSI C136.2 and the asset owner's specification (R11). The standard was not read in this session.
+4. R7 shortfall and R13 derating: options in LPN-DDR-001 O2 and O3, awaiting Amish.
+5. Sensor port pinout, to be agreed with FieldNode and the adopting teams (FieldNode O2).
+6. Whether neighboring lamps should also brighten ahead of a pedestrian, which needs a lamp-to-lamp message path.
+7. A DALI-2 D4i variant and a Zhaga Book 18 form, if a partner needs them.
 
 ## Key design decisions
 
-Record each significant decision as a file in [decisions/](decisions/) once Amish has made it. None has been recorded yet.
+Decisions are recorded in [decisions/](decisions/). [0001: TRL 2 review decisions](decisions/0001-trl2-review-decisions.md) (LPN-DDR-001) lists the recommendations adopted for TRL 3 work under Amish's 2026-09-25 instruction, open for his review, and the items that remain open.

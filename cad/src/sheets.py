@@ -1,0 +1,47 @@
+"""LampNode general arrangement drawing LPN-DWG-001 (Rev P1).
+
+Run from the repo root:  python cad/src/sheets.py
+Builds cad/drawings/LPN-DWG-001.svg, .pdf and .png from the parametric model.
+LPN-DWG-001 is free because the concept blueprint uses LPN-DWG-010.
+"""
+import shutil
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / ".kit"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from drawing import Sheet, project_views  # noqa: E402
+from model import PARAMS as P, assemblies, build_parts, envelope, head_frame  # noqa: E402
+
+parts = build_parts()
+asm = assemblies(parts)
+work = ROOT / "cad/drawings/_views"
+views = project_views(asm["lampnode-installed-reference"], work)
+cx, cy, cz = envelope(asm["lampnode-controller"])
+hx_, hy_, hz_ = envelope(asm["lampnode-sensor-head"])
+hx, htop, hzc = head_frame(P)
+
+s = Sheet(project="LampNode", title="General arrangement, controller and sensor head", dwg_no="LPN-DWG-001",
+          rev="P1", author="Amish Chadha", date="2026-09-25", concept=True,
+          material="Dome ASA; base and head box PC; clamps stainless; bracket Al. See bom/bom.csv",
+          revisions=[("P1", "Preliminary GA from cad/src/model.py (LPN-CAL-001)", "2026-09-25", "AC")])
+s.add_ortho(views, ["front", "top", "right"])
+s.add_svg(views["iso"], 276, 30, 140, 84, label="Isometric view", sublabel="Not to scale; grey = existing receptacle and arm")
+s.add_notes("Key dimensions and interfaces (mm)", [
+    f"Controller {cx:.0f} dia. x {cz:.0f} incl. blades; dome {P['dome_d']:.0f} x {P['dome_h']:.0f}",
+    "Base: ANSI C136.41 7-contact twist-lock (representative),",
+    "  3 power blades, 4 low-voltage contacts, no earth",
+    f"Sensor head {P['head'][0]:.0f} x {P['head'][1]:.0f} x {P['head'][2]:.0f}, center {abs(hx):.0f} from",
+    f"  receptacle toward the pole; {P['head_gap']:.0f} below a {P['arm_d']:.0f} dia. arm",
+    f"Radar tilted {P['radar_tilt']:.0f} deg down, looking along the street",
+    "M12 5-pole: base to head, 1 m cable; 2 ports under head",
+    f"Band clamps for 50 to 80 arms, pitch {P['clamp_pitch']:.0f}",
+    "Mains 120 to 277 V AC; 0 to 10 V dimming; 12 V SELV 3 W",
+    "Relay normally closed: lamp on if the controller fails",
+    "Mass: controller 0.34 kg, head 0.45 kg (LPN-CAL-001)",
+    "PRELIMINARY, NOT FOR FABRICATION",
+], x=276, y=128, width=140)
+s.save(ROOT / "cad/drawings/LPN-DWG-001")
+shutil.rmtree(work, ignore_errors=True)
+print("wrote cad/drawings/LPN-DWG-001.svg, .pdf, .png")
