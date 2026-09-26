@@ -111,7 +111,11 @@ outer area,337.9,cm2
 "interior (shell + 5 K), ports unloaded",63.32,C
 "interior (shell + 5 K), ports at 3 W",64.53,C
 supply capacity at that interior temperature (derating assumption),3.547,W
-12 V peak demand,3.9,W
+"12 V peak demand, ports at 3 W (no limit)",3.9,W
+"interior (shell + 5 K), ports limited to 2.5 W",64.33,C
+supply capacity at that interior temperature,3.567,W
+12 V peak demand with the port limit,3.4,W
+margin with the port limit,0.1671,W
 "one port at 3 W, 10 m of 0.34 mm2 cable: drop",0.2529,V
   as a share of 12 V,2.108,%
 controller to head cable current,0.2692,A
@@ -155,7 +159,7 @@ R9,Report faults,Last gasp 0.144 J against 1.32 J stored; 15 min status,Met (des
 R10,Self-consumption,0.68 W average,Met on paper
 R11,Environment,Interior 63 to 65 C at 45 C in sun (70 C rating); MOV 118 J at 5 kA; IP66 and surge need tests,At risk
 R12,Fail safe,"NC relay, open 0 to 10 V = full, coil needs a toggling drive, day decision needs clock AND light sensor",Met (design review)
-R13,Host other sensors,0.25 V drop at 10 m; 3.90 W peak against 3.55 W derated supply at 65 C,At risk
+R13,Host other sensors,0.25 V drop at 10 m; ports limited to 2.5 W above 50 C inside (DDR-002): 3.40 W peak against 3.57 W at 64 C (3.90 W against 3.55 W without the limit),Met on paper (firmware port limit)
 R14,Privacy,"Doppler radar, no image; presence counts only",Met (design review)
 R15,Secure and open,"LoRaWAN 1.0.4, open payload; 25.7 s/day at SF9; TALQ in CityTwin (DDR item 10)",Met (design review)
 R16,Affordable,$130.00 against $150,Met

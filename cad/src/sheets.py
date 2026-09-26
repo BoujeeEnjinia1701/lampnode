@@ -1,4 +1,4 @@
-"""LampNode general arrangement drawing LPN-DWG-001 (Rev P1).
+"""LampNode general arrangement drawing LPN-DWG-001 (Rev P2).
 
 Run from the repo root:  python cad/src/sheets.py
 Builds cad/drawings/LPN-DWG-001.svg, .pdf and .png from the parametric model.
@@ -23,9 +23,10 @@ hx_, hy_, hz_ = envelope(asm["lampnode-sensor-head"])
 hx, htop, hzc = head_frame(P)
 
 s = Sheet(project="LampNode", title="General arrangement, controller and sensor head", dwg_no="LPN-DWG-001",
-          rev="P1", author="Amish Chadha", date="2026-09-25", concept=True,
+          rev="P2", author="Amish Chadha", date="2026-09-25", concept=True,
           material="Dome ASA; base and head box PC; clamps stainless; bracket Al. See bom/bom.csv",
-          revisions=[("P1", "Preliminary GA from cad/src/model.py (LPN-CAL-001)", "2026-09-25", "AC")])
+          revisions=[("P1", "Preliminary GA from cad/src/model.py (LPN-CAL-001)", "2026-09-25", "AC"),
+                     ("P2", "Port power note: 2.5 W above 50 C inside (LPN-DDR-002)", "2026-09-25", "AC")])
 s.add_ortho(views, ["front", "top", "right"])
 s.add_svg(views["iso"], 276, 30, 140, 84, label="Isometric view", sublabel="Not to scale; grey = existing receptacle and arm")
 s.add_notes("Key dimensions and interfaces (mm)", [
@@ -37,7 +38,8 @@ s.add_notes("Key dimensions and interfaces (mm)", [
     f"Radar tilted {P['radar_tilt']:.0f} deg down, looking along the street",
     "M12 5-pole: base to head, 1 m cable; 2 ports under head",
     f"Band clamps for 50 to 80 arms, pitch {P['clamp_pitch']:.0f}",
-    "Mains 120 to 277 V AC; 0 to 10 V dimming; 12 V SELV 3 W",
+    "Mains 120 to 277 V AC; 0 to 10 V dimming",
+    "Ports 12 V SELV, 3 W total; 2.5 W above 50 C inside",
     "Relay normally closed: lamp on if the controller fails",
     "Mass: controller 0.34 kg, head 0.45 kg (LPN-CAL-001)",
     "PRELIMINARY, NOT FOR FABRICATION",

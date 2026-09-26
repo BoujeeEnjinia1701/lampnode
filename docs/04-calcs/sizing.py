@@ -54,10 +54,12 @@ PSU_ETA = 0.72         # incremental efficiency at light load
 PSU_RATED = 5.0        # W
 PORT_W = 3.0           # W, hosted sensor allowance, two ports
 TX_W = 0.40            # W, radio transmit transient (22 dBm class)
+PORT_W_HOT = 2.5       # W, firmware port limit above T_PORT_LIMIT inside the dome (LPN-DDR-001 O3, decided)
+T_PORT_LIMIT = 50.0    # C, interior temperature at which the firmware limit applies
 
 
 def banner():
-    print("LampNode sizing, LPN-CAL-001 v0.1 (all values estimates)")
+    print("LampNode sizing, LPN-CAL-001 v0.2 (all values estimates)")
 
 
 # ---------------------------------------------------------------- 1. night hours
@@ -393,8 +395,19 @@ def thermal(pb):
     T_int = T_amb + shell_p + 5
     derate = 1.0 if T_int <= 50 else max(0.6, 1 - 0.4 * (T_int - 50) / 20)
     out("supply capacity at that interior temperature (derating assumption)", PSU_RATED * derate, "W", "{:.2f}")
-    out("12 V peak demand", pb["peak"], "W", "{:.2f}")
-    return dict(T0=T_amb + shell + 5, T3=T_int, cap=PSU_RATED * derate)
+    out("12 V peak demand, ports at 3 W (no limit)", pb["peak"], "W", "{:.2f}")
+    # Firmware port limit (LPN-DDR-001 O3): above T_PORT_LIMIT inside, the ports share PORT_W_HOT
+    q_int_lim = q_int + PORT_W_HOT * (1 / 0.80 - 1)
+    shell_l = (q_sun + q_int_lim + Gb * dT_lum) / (UA + Gb)
+    T_lim = T_amb + shell_l + 5
+    derate_l = 1.0 if T_lim <= 50 else max(0.6, 1 - 0.4 * (T_lim - 50) / 20)
+    peak_lim = pb["peak"] - (PORT_W - PORT_W_HOT)
+    out("interior (shell + 5 K), ports limited to 2.5 W", T_lim, "C", "{:.1f}")
+    out("supply capacity at that interior temperature", PSU_RATED * derate_l, "W", "{:.2f}")
+    out("12 V peak demand with the port limit", peak_lim, "W", "{:.2f}")
+    out("margin with the port limit", PSU_RATED * derate_l - peak_lim, "W", "{:.2f}")
+    return dict(T0=T_amb + shell + 5, T3=T_int, cap=PSU_RATED * derate,
+                T_lim=T_lim, cap_lim=PSU_RATED * derate_l, peak_lim=peak_lim)
 
 
 # ---------------------------------------------------------------- 11. hosted power
@@ -487,7 +500,7 @@ def main():
         ("R10", "Self-consumption", f"{pb['s']['avg_in']:.2f} W average", "Met on paper"),
         ("R11", "Environment", f"Interior {th['T0']:.0f} to {th['T3']:.0f} C at 45 C in sun (70 C rating); MOV {s['e5']:.0f} J at 5 kA; IP66 and surge need tests", "At risk"),
         ("R12", "Fail safe", "NC relay, open 0 to 10 V = full, coil needs a toggling drive, day decision needs clock AND light sensor", "Met (design review)"),
-        ("R13", "Host other sensors", f"{hs['dv']:.2f} V drop at 10 m; {pb['peak']:.2f} W peak against {th['cap']:.2f} W derated supply at {th['T3']:.0f} C", "At risk"),
+        ("R13", "Host other sensors", f"{hs['dv']:.2f} V drop at 10 m; ports limited to {PORT_W_HOT:.1f} W above {T_PORT_LIMIT:.0f} C inside (DDR-002): {th['peak_lim']:.2f} W peak against {th['cap_lim']:.2f} W at {th['T_lim']:.0f} C ({pb['peak']:.2f} W against {th['cap']:.2f} W without the limit)", "Met on paper (firmware port limit)"),
         ("R14", "Privacy", "Doppler radar, no image; presence counts only", "Met (design review)"),
         ("R15", "Secure and open", f"LoRaWAN 1.0.4, open payload; {ra['day9']:.1f} s/day at SF9; TALQ in CityTwin (DDR item 10)", "Met (design review)"),
         ("R16", "Affordable", f"${co['tot']:.2f} against ${co['budget']}", "Met"),

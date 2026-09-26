@@ -1,5 +1,50 @@
 # Review note: LampNode
 
+## Session 2026-09-25: recommendations accepted
+
+On 2026-09-25 Amish wrote: "i accept all your recommendations, go with them across all repos." Every LampNode item with a recommendation is now **decided by Amish, 2026-09-25: go with recommendation**, recorded in `docs/decisions/0002-recommendations-accepted.md` (LPN-DDR-002 v0.1). LPN-DDR-001 moved to v0.2 with the new status on D1 to D10 and O2 to O8.
+
+### Decisions applied and what changed
+
+- **D1 to D10** (socket, radar, head link, LoRaWAN, 0 to 10 V, fail-on relay, hosted power policy, default output, mains range, TALQ in CityTwin): decided. These were already built into the TRL 3 design, so only the status wording changed.
+- **O2, R7 shortfall:** option (c). R7 stays at 35 % with the reference profile; the risk is accepted until real traffic counts exist. Numbers unchanged (34.1 to 36.4 %, at risk).
+- **O3, R13 at high temperature:** option (a), firmware limits the two ports to 2.5 W in total above 50 °C inside the dome (no 10 W supply). 12 V peak against derated supply: before 3.90 W against 3.55 W at 65 °C (at risk); after 3.40 W against 3.57 W at 64.3 °C, margin 0.17 W (met on paper). R13 restated in LPN-REQ-001 v0.4; limited case added to `docs/04-calcs/sizing.py` and LPN-CAL-001 v0.2 section 11; firmware rule added to LPN-PRC-001 v0.4; drawing note changed, so LPN-DWG-001 moved from Rev P1 to P2 (geometry unchanged). No BOM change.
+- **O4 to O7** (TCXO clock, 80 A inrush normally closed relay with zero-cross closing, 385 V varistor with TVS diodes and no gas discharge tube, charge-pump coil drive, two-signal day logic, I/Q radar): confirmed. Already in `bom/bom.csv`; wording updated in `bom/bom-notes.md`, LPN-PRC-001 and LPN-CAL-001. Checks on real parts (driver inrush, surge, fail-on behavior) are TRL 4 work, decided but on hold.
+- **O8, 5-pole M12 ports:** confirmed; pinout is a cross-repo action with FieldNode.
+- Budget: no recommendation touched it. `budget_usd` stays at 150; BOM $130.00. Pitch and problem unchanged.
+- Documents bumped: LPN-DDR-001 v0.2, LPN-REQ-001 v0.4, LPN-PRC-001 v0.4, LPN-PRB-001 v0.4 (status wording), LPN-CAL-001 v0.2. README concept summary, key components and "What sparked the idea" updated. The new inspiration is Detroit: 40 % of its streetlights were dark before the 2014 to 2016 relighting, and in 2019 the city sued over about 20,000 early-failing LED fixtures first noticed through resident calls.
+- All generated files re-rendered for the domain change (docs PDFs, LPN-DWG-001, all of `media/`), and model, sheet, media and CAL scripts re-run.
+
+### Requirement status now (LPN-CAL-001 v0.2, Table 6)
+
+0 not met, 4 at risk, 11 met on paper or by design review, 1 not verifiable at TRL 3 (before: 5 at risk, 10 met).
+
+| ID | Status | Key number |
+| --- | --- | --- |
+| R3 Switch the luminaire | At risk | 72 A inrush per 100 W driver at random closing; about 20 A with zero-cross closing |
+| R6 Detect presence | At risk | 36 dB signal to noise at 15 m; rain, trees and clutter need a field trial |
+| R7 Save energy | At risk (accepted by Amish) | 34.1 to 36.4 % against 35 % |
+| R11 Environment | At risk | 63 to 65 °C inside at 45 °C in sun against 70 °C; IP66 and surge need tests |
+| R1 Fit the socket | Not verifiable at TRL 3 | Representative base only |
+| R13 Host other sensors | Met on paper (firmware port limit) | 3.40 W peak against 3.57 W at 64 °C |
+| R2, R4, R5, R8, R9, R10, R12, R14, R15, R16 | Met on paper or by design review | Unchanged from the TRL 3 session |
+
+### Still awaiting Amish
+
+1. **O1, first partner** (city, utility or campus) and region for co-design. No recommendation was made, so no choice is recorded.
+
+### Cross-repo actions
+
+Recorded here only; no other repo was edited.
+
+- **FieldNode:** agree the 5-pole M12 port pinout (FieldNode O2) and the port supply voltage (FieldNode 3.3, 5 or 12 V at build; LampNode 12 V only).
+- **AirStreet and NoiseMap:** mention LampNode 12 V ports as an optional power source, FieldNode solar staying the default (D7). Hosted sensors must accept 2.5 W total on hot days.
+- **CityTwin:** add a TALQ bridge to CityTwin scope (D10).
+
+### TRL 4
+
+TRL 4 remains on hold by Amish's instruction. `trl: 3` and `trl_target: 3` unchanged. No part selection against datasheets, bench build, test, firmware beyond the documented rule, or purchasing was started.
+
 ## Session 2026-09-25: TRL 3
 
 On 2026-09-25 Amish asked for this batch of repos to go through the usual process with the instruction "you know the drill, nothing gets past TRL 3". He has not reviewed LampNode's TRL 2 items one by one, so every item that carried a recommendation is adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for his review. Nothing is recorded as decided or approved by him. This session ran `/advance-trl3` on that basis and stopped at TRL 3.
@@ -36,9 +81,13 @@ Design changes found by the calculations (engineering proposals, in the BOM, awa
 
 ### Decisions recorded (LPN-DDR-001)
 
+*Status update, 2026-09-25: every item below that carries a recommendation is now decided by Amish, 2026-09-25: go with recommendation (LPN-DDR-002). Only the first partner (O1, item 11 at TRL 2) remains proposed, awaiting Amish.*
+
 Adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for his review: D1 ANSI C136.41 socket first, Zhaga Book 18 later; D2 24 GHz Doppler radar, schedule-only as a firmware mode; D3 cable to a head under the arm; D4 LoRaWAN on the STM32WL-class module; D5 0 to 10 V only, D4i if a partner needs it; D6 fail-on normally closed relay; D7 siblings stay on FieldNode solar, LampNode power optional, hosted sensors on cabinet-switched feeders bring storage; D8 ships at photocell-equivalent full output; D9 120 to 277 V now, 347 V and 480 V later; D10 TALQ bridge is CityTwin scope. No budget, pitch or problem change was recommended, so none was made.
 
 ### Still awaiting Amish
+
+*Status update, 2026-09-25: every item below that carries a recommendation is now decided by Amish, 2026-09-25: go with recommendation (LPN-DDR-002). Only the first partner (O1, item 11 at TRL 2) remains proposed, awaiting Amish.*
 
 1. **O1, first partner** (city, utility or campus) and region. No recommendation was made.
 2. **O2, R7 shortfall.** Options: relax R7 to 30 %; move the reference floor start to 21:00; or keep both and accept the risk until traffic counts exist. Recommendation: keep both and accept the risk. Not applied.
@@ -111,6 +160,8 @@ Requirements not met or at risk:
 - **R8 and R11 unverified:** metering accuracy at low dimmed power, and the surge level.
 
 ### Proposed, awaiting Amish
+
+*Status update, 2026-09-25: every item below that carries a recommendation is now decided by Amish, 2026-09-25: go with recommendation (LPN-DDR-002). Only the first partner (O1, item 11 at TRL 2) remains proposed, awaiting Amish.*
 
 1. **Socket.** Options: (a) ANSI C136.41 7-contact; (b) Zhaga Book 18; (c) both from the start. Recommendation: (a) first for retrofits, (b) as a later variant.
 2. **Presence sensor.** Options: (a) 24 GHz Doppler radar; (b) PIR; (c) no presence, schedule only. Recommendation: (a), keeping (c) as a firmware mode.

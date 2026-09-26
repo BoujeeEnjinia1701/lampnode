@@ -48,7 +48,7 @@ Faults are still found by people. New York City maintains nearly 400,000 streetl
 
 ## What sparked the idea
 
-It came out of a September 2026 review of Design Molecule's applied research areas against the open projects already in the lab. The real-world trigger is that the socket standards needed for a swappable controller now exist (ANSI C136.41, and Zhaga Book 18 with D4i drivers that are compatible with both ([DALI Alliance](https://www.dali-alliance.org/d4i/))), yet cities still describe vendor lock-in as the problem to solve ([TALQ](https://www.talq-consortium.org/)).
+The starting point was Detroit. When the city began relighting its streets in February 2014, 40 % of its streetlights did not work; the 65,000 new LED lights were finished in December 2016 for about $185 million ([The Detroit News, 2016](https://www.detroitnews.com/story/news/local/detroit-city/2016/12/15/new-streetlights-installed/95497310/)). In May 2019 the city sued a supplier over about 20,000 of those LED fixtures that were dimming and failing early, and the Public Lighting Authority had first noticed the problem through an "excessive number of calls" about malfunctioning lights ([WXYZ Detroit, 2019](https://www.wxyz.com/news/city-of-detroit-files-lawsuit-claiming-20-000-led-streetlights-are-dimming-prematurely)). Even a brand-new, efficient network still relied on residents to find its failing lamps. A small controller on each lamp that measures its power and reports a lamp that is out, cycling or drawing the wrong power would let the owner see such faults first, and an open design would let any city fit, inspect and repair it without tying the network to one supplier.
 
 ## Problem
 
@@ -60,7 +60,7 @@ An open streetlight controller that dims LED streetlights by schedule and presen
 
 A twist-lock controller replaces the photocell on the luminaire and drives its 0 to 10 V dimming input; a sensor head clamped under the arm carries a 24 GHz radar for presence and two powered M12 ports for other sensors; status and faults go out every 15 min over LoRaWAN.
 
-TRL 3 calculations ([LPN-CAL-001](docs/04-calcs/01-sizing.md)) put a 100 W luminaire at 40° N at about 432 kWh a year under a photocell and 275 to 285 kWh with the reference presence profile, a saving of 34 to 36 % against a 35 % target. The controller draws 0.68 W on average and the parts cost $130 against the $150 budget. No requirement is clearly missed, but five are at risk on paper: relay inrush, presence detection in rain and wind, the energy saving, the temperature margin in full sun, and power for hosted sensors at high temperature. 347 V and 480 V circuits, DALI-2 D4i dimming and a TALQ bridge are later variants or sibling scope. The design choices are adopted for TRL 3 work under Amish's 2026-09-25 instruction, open for his review ([LPN-DDR-001](docs/decisions/0001-trl2-review-decisions.md)). See the [requirements](docs/03-requirements.md).
+TRL 3 calculations ([LPN-CAL-001](docs/04-calcs/01-sizing.md)) put a 100 W luminaire at 40° N at about 432 kWh a year under a photocell and 275 to 285 kWh with the reference presence profile, a saving of 34 to 36 % against a 35 % target. The controller draws 0.68 W on average and the parts cost $130 against the $150 budget. No requirement is clearly missed, but four are at risk on paper: relay inrush, presence detection in rain and wind, the energy saving (kept at a 35 % target with the risk accepted) and the temperature margin in full sun. Power for hosted sensors is met on paper because the firmware limits the ports to 2.5 W above 50 °C inside. 347 V and 480 V circuits, DALI-2 D4i dimming and a TALQ bridge are later variants or sibling scope. The design choices were decided by Amish on 2026-09-25 ([LPN-DDR-001](docs/decisions/0001-trl2-review-decisions.md), [LPN-DDR-002](docs/decisions/0002-recommendations-accepted.md)); only the first co-design partner is still open. See the [requirements](docs/03-requirements.md).
 
 Full design precis: [docs/02-concept.md](docs/02-concept.md)
 
@@ -72,7 +72,7 @@ Full design precis: [docs/02-concept.md](docs/02-concept.md)
 - STM32WL-class controller with LoRaWAN radio (shared with FieldNode), TCXO clock and tilt sensor
 - 0 to 10 V dimming output and ambient light sensor
 - Sensor head under the arm with a 24 GHz radar presence sensor with direction (I/Q) output
-- Two sealed 5-pole M12 expansion ports, 12 V SELV, 3 W total
+- Two sealed 5-pole M12 expansion ports, 12 V SELV, 3 W total (2.5 W above 50 °C inside)
 
 The parametric model is in [cad/src/model.py](cad/src/model.py), with STEP and STL exports in `cad/step/` and `cad/stl/`. The working bill of materials is in [bom/bom.csv](bom/bom.csv).
 
@@ -105,4 +105,4 @@ Controlled documents follow the portfolio [documentation standard](.kit/STANDARD
 - **Hardware** (CAD, drawings, BOM, electronics): [CERN-OHL-S v2](LICENSE)
 - **Software** (firmware, scripts, notebooks): [MIT](LICENSE-SOFTWARE)
 
-A project of the [Design Molecule](https://designmolecule.com) lab. Smart cities set.
+A project of the [Design Molecule](https://designmolecule.com) lab.

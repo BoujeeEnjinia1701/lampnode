@@ -3,7 +3,7 @@ doc_id: LPN-PRB-001
 title: LampNode problem statement
 project: LampNode
 doc_type: Problem statement
-version: "0.3"
+version: "0.4"
 status: Draft
 date: '2026-09-25'
 author: Amish Chadha
@@ -21,6 +21,10 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Open questions updated for the choices adopted for TRL 3 under Amish's 2026-09-25 instruction, open for his review (LPN-DDR-001); out-of-scope items and sibling interfaces aligned
+- version: "0.4"
+  date: '2026-09-25'
+  author: Amish Chadha
+  change: Recommendations accepted by Amish (DDR-002)
 ---
 
 # LampNode problem statement
@@ -91,7 +95,7 @@ Most streetlights run at full power from dusk to dawn whether anyone is on the s
 ## Open questions
 
 1. Are there open-hardware streetlight controllers to learn from or join, rather than start anew?
-2. Socket: ANSI C136.41 7-contact first, Zhaga Book 18 later, is adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for his review (LPN-DDR-001 D1).
+2. Socket: ANSI C136.41 7-contact first, Zhaga Book 18 later, was decided by Amish on 2026-09-25 (LPN-DDR-001 D1, LPN-DDR-002).
 3. How common are cabinet-switched feeders in the first partner city? Hosted sensors there need their own storage (LPN-REQ-001 R13). The first partner itself is proposed, awaiting Amish (LPN-DDR-001 O1).
 4. Will a lighting authority accept presence dimming on the roads chosen, and what floor level and hold time will it set?
 5. Which 0 to 10 V and D4i drivers are in the partner's luminaire stock, and how do they behave when the control line is open?

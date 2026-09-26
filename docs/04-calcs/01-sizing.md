@@ -3,7 +3,7 @@ doc_id: LPN-CAL-001
 title: LampNode sizing calculations
 project: LampNode
 doc_type: Calculation note
-version: "0.1"
+version: "0.2"
 status: Draft
 date: '2026-09-25'
 author: Amish Chadha
@@ -13,13 +13,17 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: First TRL 3 sizing note (energy, self-consumption, switching and inrush, dimming, clock, radar, metering, radio and last gasp, surge, temperature, hosted power, mass, cost) with a status for every requirement
+- version: "0.2"
+  date: '2026-09-25'
+  author: Amish Chadha
+  change: Recommendations accepted by Amish (DDR-002). Firmware port limit (2.5 W above 50 °C inside) added to section 11; R13 now met on paper; engineering changes confirmed
 ---
 
 # LampNode sizing calculations
 
-On paper, LampNode meets ten of its sixteen requirements, and none is clearly not met. Five are **at risk**: R3 (relay inrush), R6 (presence detection), R7 (energy saving), R11 (environment) and R13 (hosted sensor power at high temperature). R1 (socket fit and a 5 min change at height) cannot be verified until a base is tried on a real receptacle.
+On paper, LampNode meets eleven of its sixteen requirements, and none is clearly not met. Four are **at risk**: R3 (relay inrush), R6 (presence detection), R7 (energy saving) and R11 (environment). R13 (hosted sensor power) moved from at risk to met on paper with the firmware port limit decided by Amish on 2026-09-25 (LPN-DDR-002). R1 (socket fit and a 5 min change at height) cannot be verified until a base is tried on a real receptacle.
 
-The largest correction to TRL 2 is the energy saving. Integrating the reference profile over real night lengths at 40° N gives **34.1 to 36.4 %**, not about 41 %, against the 35 % target of R7. The TRL 2 estimate assumed every night had 8 dimmed hours and 3.2 h at full output; in fact the dimmed window 22:00 to 06:00 averages 7.52 h a night, summer nights are shorter than it, and the photocell baseline runs 4,323 h a year, not 4,100 h. The calculations also found three design changes, now in `bom/bom.csv` and proposed for Amish's review: a temperature-compensated (TCXO) real-time clock, since an ordinary 32 kHz crystal drifts 160 s in a cold month against the 2 min limit of R5; a normally closed relay rated for 80 A inrush and closed at the voltage zero crossing; and a 385 V class surge stage without a gas discharge tube, because the twist-lock socket has no earth contact.
+The largest correction to TRL 2 is the energy saving. Integrating the reference profile over real night lengths at 40° N gives **34.1 to 36.4 %**, not about 41 %, against the 35 % target of R7. The TRL 2 estimate assumed every night had 8 dimmed hours and 3.2 h at full output; in fact the dimmed window 22:00 to 06:00 averages 7.52 h a night, summer nights are shorter than it, and the photocell baseline runs 4,323 h a year, not 4,100 h. The calculations also found three design changes, now in `bom/bom.csv` and decided by Amish on 2026-09-25 (LPN-DDR-002): a temperature-compensated (TCXO) real-time clock, since an ordinary 32 kHz crystal drifts 160 s in a cold month against the 2 min limit of R5; a normally closed relay rated for 80 A inrush and closed at the voltage zero crossing; and a 385 V class surge stage without a gas discharge tube, because the twist-lock socket has no earth contact.
 
 Every number here is printed by `docs/04-calcs/sizing.py` (run from the repo root: `python docs/04-calcs/sizing.py`), which also writes `docs/04-calcs/results.csv`. The script reads geometry and part volumes from `cad/src/model.py`, costs from `bom/bom.csv` and the budget from `project.yaml`. All values are first-principles estimates with typical part values; nothing is measured and no part has been chosen from a datasheet.
 
@@ -35,7 +39,7 @@ Every number here is printed by `docs/04-calcs/sizing.py` (run from the repo roo
 | Driver when dimmed | Ideal (input proportional to light), or input = 6 % of rated + 94 % x light level | Typical drivers lose efficiency when dimmed |
 | 12 V loads | Controller, clock, accelerometer and light sensor 0.05 W; metering 0.05 W; relay coil 0.40 W by day only; radar 0.20 W and head board 0.03 W by night only | Typical parts |
 | Power supply | 5 W module, 0.10 W no-load input, 72 % incremental efficiency at light load, 80 % near full load; full output to 50 °C, falling linearly to 60 % at 70 °C | Typical encapsulated 5 W modules |
-| Hosted sensors | 3 W total on two ports; 0.40 W radio transmit transient | LPN-REQ-001 R13 |
+| Hosted sensors | 3 W total on two ports, limited to 2.5 W above 50 °C inside; 0.40 W radio transmit transient | LPN-REQ-001 R13, LPN-DDR-002 |
 | Driver inrush | 60 A cold-start peak at 230 V for a typical 100 W outdoor driver, 47 µF bulk capacitor | Typical driver datasheets; no driver chosen |
 | Radar | 24.125 GHz; 8 dBm, 11 dBi each way; half-power elevation half-width 17°; walking person 0.5 m²; 35 dB effective noise figure at low Doppler, 10 Hz bins, 15 dB detection threshold | Typical low-cost K-band modules |
 | Tariff | $0.10 to $0.25 per kWh | Typical public lighting rates |
@@ -53,7 +57,7 @@ At 40° N the lamp is lit **4,323 h a year** (11.84 h a night on average, from 8
 | Reference presence profile, ideal driver, with 5.9 kWh of controller use | 275 kWh | **36.4 %** |
 | Same, dimmed driver model | 285 kWh | **34.1 %** |
 
-The dimmed window covers 2,745 h a year, 7.52 h a night on average. With an ideal driver R7 is met with 1.4 points to spare; with the dimmed driver model it is missed by 0.9 points. **R7 is at risk.** The TRL 2 method, applied to the same inputs, reproduces its own 236 kWh, so the difference comes from the night lengths and not from an arithmetic slip. The energy saved is **148 kWh a year** with the dimmed driver model.
+The dimmed window covers 2,745 h a year, 7.52 h a night on average. With an ideal driver R7 is met with 1.4 points to spare; with the dimmed driver model it is missed by 0.9 points. **R7 is at risk.** Amish decided on 2026-09-25 to keep the 35 % target and the reference profile and accept this risk until real traffic counts exist (LPN-DDR-002, from LPN-DDR-001 O2). The TRL 2 method, applied to the same inputs, reproduces its own 236 kWh, so the difference comes from the night lengths and not from an arithmetic slip. The energy saved is **148 kWh a year** with the dimmed driver model.
 
 The presence assumption matters more than the driver. An isolated pedestrian keeps the lamp at full for about 70 s (8.6 s from detection at 15 m to the pole, a 60 s hold and 1 s of ramps), so the 15 % boost equals about 7.8 isolated passes an hour. With random arrivals and the dimmed driver model, the saving is 40.4 % with no traffic, 37.3 % at 4 events an hour, 34.4 % at 8, 29.3 % at 16 and 22.0 % at 30. At 60° N the lamp runs 4,277 h and uses 428 kWh, and the saving falls to 31.8 %, because long winter evenings before 22:00 stay at full output.
 
@@ -61,7 +65,7 @@ The presence assumption matters more than the driver. An isolated pedestrian kee
 
 The lamp is lit for 0.493 of the year. The relay coil averages 0.203 W, the radar and head board 0.113 W, and the 12 V side 0.416 W in all. The shunt adds 0.8 mW. From the mains LampNode draws **0.68 W** on average, against 1.0 W: R10 is met. The TRL 2 figure (about 0.6 W) used a 0.24 W coil; a typical 16 A relay coil is 0.40 W.
 
-With both hosted ports at 3 W the 12 V side carries 3.50 W by day (coil on) and 3.33 W at night (radar on), or **3.90 W** at peak with a radio transmission: 78 % of the 5 W rating at 25 to 50 °C. Section 11 shows the problem at high temperature.
+With both hosted ports at 3 W the 12 V side carries 3.50 W by day (coil on) and 3.33 W at night (radar on), or **3.90 W** at peak with a radio transmission: 78 % of the 5 W rating at 25 to 50 °C. Section 11 shows the problem at high temperature and the firmware port limit that solves it.
 
 ## 4. Switching and inrush (R3)
 
@@ -75,7 +79,7 @@ A 12-bit PWM filtered to 0 to 10 V gives 2.44 mV steps against the 100 mV needed
 
 ## 6. Clock without the network (R5)
 
-A 32 kHz tuning-fork crystal (±20 ppm, falling 0.034 ppm/K² away from 25 °C) drifts 52 s in 30 days at 25 °C, **160 s at -10 °C** and 318 s at -30 °C (230 s at 70 °C). The 2 min limit of R5 is therefore not met in a cold month. A TCXO real-time clock (±3.5 ppm from -40 to 85 °C) drifts at most **9.1 s** in 30 days. The TCXO clock is now in `bom/bom.csv` line 7 (+$3), so R5 is met on paper; the change is an engineering proposal awaiting Amish. When the network is up, the controller also sets its clock from the LoRaWAN network time.
+A 32 kHz tuning-fork crystal (±20 ppm, falling 0.034 ppm/K² away from 25 °C) drifts 52 s in 30 days at 25 °C, **160 s at -10 °C** and 318 s at -30 °C (230 s at 70 °C). The 2 min limit of R5 is therefore not met in a cold month. A TCXO real-time clock (±3.5 ppm from -40 to 85 °C) drifts at most **9.1 s** in 30 days. The TCXO clock is now in `bom/bom.csv` line 7 (+$3), so R5 is met on paper; the change was decided by Amish on 2026-09-25 (LPN-DDR-002). When the network is up, the controller also sets its clock from the LoRaWAN network time.
 
 ## 7. Presence detection (R6)
 
@@ -129,7 +133,7 @@ The twist-lock socket has no earth contact, so LampNode can clamp only line to n
 
 At 45 °C ambient, with the sun 60° above the horizon, the dome and base present 99 cm² to the sun and absorb 3.46 W at an absorptance of 0.35. Their 338 cm² surface loses heat at 12.4 W/(m² K) in still air. With 0.79 W dissipated inside by day, and the luminaire top 20 K above ambient under the base, the shell rises 13.3 K; allowing 5 K from shell to parts, the inside reaches **63 °C** with the ports unloaded and **65 °C** with 3 W on the ports. That is inside the 70 °C rating, with little margin for a dark dome or a hotter luminaire. **R11 is at risk** (temperature margin, surge and IP66 all unverified).
 
-At 65 °C the derated supply gives about 3.55 W, against the 3.90 W peak with both ports at 3 W. **R13 is at risk** at the hot end. Options, proposed for Amish: limit the ports to 2.5 W above 50 °C in firmware, or fit a 10 W supply module. The voltage drop is not a problem: one port at 3 W over 10 m of 0.34 mm² cable loses 0.25 V (2.1 %), and the 1 m cable to the head, at 0.27 A, loses 0.027 V.
+At 65 °C the derated supply gives about 3.55 W, against the 3.90 W peak with both ports at 3 W, so without a limit R13 would be at risk at the hot end. Amish decided on 2026-09-25 (LPN-DDR-002, from LPN-DDR-001 O3) that the firmware limits the two ports to 2.5 W in total whenever the interior is above 50 °C, rather than fitting a 10 W supply. With the limit, the internal dissipation falls slightly and the interior reaches 64.3 °C; the derated supply gives 3.57 W against a 3.40 W peak, a margin of 0.17 W. **R13 is met on paper** with the firmware port limit. Hosted sensors must tolerate the lower allowance on hot days. The voltage drop is not a problem: one port at 3 W over 10 m of 0.34 mm² cable loses 0.25 V (2.1 %), and the 1 m cable to the head, at 0.27 A, loses 0.027 V.
 
 ## 12. Mass
 
@@ -164,12 +168,12 @@ TRL 2 gave 0.25 kg for the controller; 0.34 kg is closer to typical photocontrol
 | R10 | Low self-consumption | 0.68 W average | Met on paper |
 | R11 | Survive the environment | Inside 63 to 65 °C at 45 °C in sun (70 °C rating); 118 J in the varistor at 5 kA; IP66 and surge need tests | **At risk** |
 | R12 | Fail safe | Normally closed relay; open 0 to 10 V line gives full output; coil drive needs a toggling signal; day needs both clock and light sensor | Met (design review) |
-| R13 | Host other sensors | 0.25 V drop at 10 m; 3.90 W peak against 3.55 W available at 65 °C | **At risk** |
+| R13 | Host other sensors | 0.25 V drop at 10 m; ports limited to 2.5 W above 50 °C inside: 3.40 W peak against 3.57 W at 64 °C (3.90 W against 3.55 W without the limit) | Met on paper (firmware port limit) |
 | R14 | Privacy | Doppler radar, no image; presence counts only | Met (design review) |
 | R15 | Secure and open | LoRaWAN 1.0.4, published payload; 25.7 s a day at SF9; TALQ in CityTwin | Met (design review) |
 | R16 | Affordable | $130.00 against $150 | Met |
 
-Summary: 0 not met, 5 at risk, 10 met on paper or by design review, 1 not verifiable at TRL 3.
+Summary: 0 not met, 4 at risk, 11 met on paper or by design review, 1 not verifiable at TRL 3.
 
 ## 15. Limits of this note
 
