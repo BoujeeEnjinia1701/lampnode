@@ -1,5 +1,20 @@
 # Review note: LampNode
 
+## Session 2026-09-26: sources strengthened
+
+Amish asked on 2026-09-26 to fix the weaker sources. README changes only; no controlled document changed.
+
+| Where | Old source | New source |
+| --- | --- | --- |
+| What sparked the idea (Detroit relighting) | The Detroit News, 2016 | [US Department of Energy, Detroit street lighting report](https://www.energy.gov/eere/ssl/articles/detroit-street-lighting-report) and [Michigan Public, 2016](https://www.michiganpublic.org/news/2016-12-16/detroit-celebrates-65-000-new-led-streetlights) |
+| What sparked the idea (2019 lawsuit) | WXYZ Detroit, 2019 | [Michigan Public, 2019](https://www.michiganpublic.org/law/2019-05-07/some-of-detroits-new-led-streetlights-are-burning-out-city-sues-manufacturer); the unverified "excessive number of calls" detail was removed, and "40 % dark" became the DOE figure of more than half of 88,000 lights out by mid-2013 |
+| Country row: United States | LA Bureau of Street Lighting (link redirects, could not be verified) | Los Angeles figure removed; row now cites [NYC DOT](https://www.nyc.gov/html/dot/html/infrastructure/streetlights.shtml) and [DALI Alliance](https://www.dali-alliance.org/d4i/) |
+| Country row: India and South Asia | None | Replaced by India, citing [PIB, 2024](https://www.pib.gov.in/PressReleasePage.aspx?PRID=2040102&reg=48&lang=2) (Street Lighting National Programme) |
+| Country row: Sub-Saharan Africa | None | Replaced by Philippines (Quezon City), citing the [World Bank](https://blogs.worldbank.org/en/energy/led-street-lighting-unburdening-our-cities) and its [case study](https://documents.worldbank.org/curated/en/842031477930270833/) |
+| Country row: Latin America | None | Replaced by Brazil (Belo Horizonte PPP), citing [ESMAP](https://www.esmap.org/node/57541) |
+
+INSPIRATIONS.md line for LampNode updated to the new sources. No verified source for an African example was found within this session's search budget, so the region table no longer has an African row; worth adding one when a primary source is found.
+
 ## Session 2026-09-25: recommendations accepted
 
 On 2026-09-25 Amish wrote: "i accept all your recommendations, go with them across all repos." Every LampNode item with a recommendation is now **decided by Amish, 2026-09-25: go with recommendation**, recorded in `docs/decisions/0002-recommendations-accepted.md` (LPN-DDR-002 v0.1). LPN-DDR-001 moved to v0.2 with the new status on D1 to D10 and O2 to O8.

@@ -12,7 +12,7 @@ An open streetlight controller that dims LED streetlights by schedule and presen
 
 ## Concept rationale
 
-Many LED streetlights, especially in North America, already have a twist-lock socket on top, built for a photocell. A controller that plugs into that socket can dim the lamp, measure its energy and report faults without anyone opening the luminaire or the pole. LampNode uses that socket, the 0 to 10 V dimming input most LED drivers already have, and a small radar head under the arm that raises the light only when someone is coming. Because the controller already has mains power and a radio on the pole, the same head offers two powered ports for other city sensors, so a street can gain air, noise or traffic sensing without new wiring.
+Many LED streetlights already have a twist-lock socket on top, built for a photocell, and the D4i driver standard supports both the NEMA/ANSI C136.41 and the Zhaga Book 18 sockets ([DALI Alliance](https://www.dali-alliance.org/d4i/)). A controller that plugs into that socket can dim the lamp, measure its energy and report faults without anyone opening the luminaire or the pole. LampNode uses that socket, the 0 to 10 V dimming input most LED drivers already have, and a small radar head under the arm that raises the light only when someone is coming. Because the controller already has mains power and a radio on the pole, the same head offers two powered ports for other city sensors, so a street can gain air, noise or traffic sensing without new wiring.
 
 It is open and garage-buildable because the main problem with smart streetlights is not the electronics but lock-in: the controller, network and software usually come from one supplier. LampNode uses a standard socket, the same LoRaWAN radio as the lab's FieldNode, and a published message format, so a city, a utility or a campus can build, inspect or replace any part of it and read its data with any LoRaWAN server, including TwinKit and CityTwin.
 
@@ -39,16 +39,16 @@ Faults are still found by people. New York City maintains nearly 400,000 streetl
 
 | Country or region | Why it matters there |
 | --- | --- |
-| United States | Large networks: New York City has nearly 400,000 streetlights ([NYC DOT](https://www.nyc.gov/html/dot/html/infrastructure/streetlights.shtml)) and Los Angeles more than 200,000 ([LA Bureau of Street Lighting](https://lalights.lacity.org/)); the ANSI C136.41 socket that LampNode targets is widely used |
+| United States | Large networks with faults still reported by residents: New York City maintains nearly 400,000 streetlights and asks residents to call 311 about problems ([NYC DOT](https://www.nyc.gov/html/dot/html/infrastructure/streetlights.shtml)); LampNode targets the NEMA/ANSI C136.41 socket, which D4i drivers also support ([DALI Alliance](https://www.dali-alliance.org/d4i/)) |
 | Sweden and the Nordic countries | Long winter nights; a dimming schedule could save about 49 % on the Swedish roads studied ([Jägerbrand, 2016](https://www.mdpi.com/1996-1073/9/5/357)) |
 | European Union | Luminaires with Zhaga Book 18 sockets and D4i drivers can power and host a module with no rewiring ([DALI Alliance](https://www.dali-alliance.org/d4i/)); a Zhaga variant of LampNode is an open question |
-| India and South Asia | Fast-growing cities with tight maintenance budgets, where fault reports without resident complaints help small crews and LoRaWAN needs no cellular contract |
-| Sub-Saharan Africa | Where grid power is costly or unreliable, cutting lighting energy and knowing which lamps have failed both matter; open parts can be sourced and repaired locally |
-| Latin America | Municipal lighting networks where open, multi-vendor controllers would let cities change suppliers over the life of the luminaires |
+| India | By June 2024 the Street Lighting National Programme had installed more than 13 million LED streetlights in 29 states and union territories, saving an estimated 8,806 GWh a year ([PIB, 2024](https://www.pib.gov.in/PressReleasePage.aspx?PRID=2040102&reg=48&lang=2)); a retrofit controller could add presence dimming and fault reports to that installed base |
+| Philippines | In Quezon City, street lighting made up 65 % of the city's electricity costs and 5 % of its overall budget ([World Bank, 2017](https://blogs.worldbank.org/en/energy/led-street-lighting-unburdening-our-cities); [case study](https://documents.worldbank.org/curated/en/842031477930270833/)), so every hour of dimming shows up in the city's accounts |
+| Brazil | Public lighting uses about 4 % of the country's electricity and 10 to 40 % of municipal energy budgets; Belo Horizonte is upgrading 178,000 streetlights to LED under a 20-year PPP contract ([ESMAP](https://www.esmap.org/node/57541)), a term over which open, multi-vendor controllers would let a city change suppliers |
 
 ## What sparked the idea
 
-The starting point was Detroit. When the city began relighting its streets in February 2014, 40 % of its streetlights did not work; the 65,000 new LED lights were finished in December 2016 for about $185 million ([The Detroit News, 2016](https://www.detroitnews.com/story/news/local/detroit-city/2016/12/15/new-streetlights-installed/95497310/)). In May 2019 the city sued a supplier over about 20,000 of those LED fixtures that were dimming and failing early, and the Public Lighting Authority had first noticed the problem through an "excessive number of calls" about malfunctioning lights ([WXYZ Detroit, 2019](https://www.wxyz.com/news/city-of-detroit-files-lawsuit-claiming-20-000-led-streetlights-are-dimming-prematurely)). Even a brand-new, efficient network still relied on residents to find its failing lamps. A small controller on each lamp that measures its power and reports a lamp that is out, cycling or drawing the wrong power would let the owner see such faults first, and an open design would let any city fit, inspect and repair it without tying the network to one supplier.
+The starting point was Detroit. By mid-2013 more than half of the city's 88,000 streetlights were estimated to be out; the relighting that began in April 2014 replaced them with 65,000 LED lights for $185 million ([US Department of Energy](https://www.energy.gov/eere/ssl/articles/detroit-street-lighting-report)) and was finished in December 2016 ([Michigan Public, 2016](https://www.michiganpublic.org/news/2016-12-16/detroit-celebrates-65-000-new-led-streetlights)). In May 2019 the city's Public Lighting Authority sued the manufacturer over about 20,000 of those fixtures, a third of the new system, that were dimming and burning out early ([Michigan Public, 2019](https://www.michiganpublic.org/law/2019-05-07/some-of-detroits-new-led-streetlights-are-burning-out-city-sues-manufacturer)). Even a brand-new, efficient network could degrade at scale before its owner had the data to see it. A small controller on each lamp that measures its power and reports a lamp that is out, cycling or drawing the wrong power would let the owner see such faults as they develop, and an open design would let any city fit, inspect and repair it without tying the network to one supplier.
 
 ## Problem
 
@@ -99,6 +99,12 @@ The parametric model is in [cad/src/model.py](cad/src/model.py), with STEP and S
 ## Documentation
 
 Controlled documents follow the portfolio [documentation standard](.kit/STANDARDS.md). Each carries a document ID (LPN-PRC-001 for the precis), a version and a revision history. Branded PDFs are built with `python .kit/render.py` and attached to GitHub Releases when a document is tagged, for example `LPN-PRC-001/v1.0`.
+
+## Credits
+
+Designed by Amish Chadha. See [CONTRIBUTORS.md](CONTRIBUTORS.md) for roles. To cite this design, use [CITATION.cff](CITATION.cff) (GitHub shows it as "Cite this repository").
+
+AI assistance (Claude) was used to accelerate concept renders, prototype documentation and first-pass sizing calculations. Design direction and all decisions are Amish Chadha's, recorded in this repository's decision records (`docs/decisions/`).
 
 ## Licenses
 
