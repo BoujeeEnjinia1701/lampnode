@@ -1,5 +1,35 @@
 # Review note: LampNode
 
+## Session 2026-09-26: product appearance model and photoreal renders
+
+Amish chose this repo for the first batch of product renders on 2026-09-26. This section is placed at the top to keep this note's newest-first order.
+
+### What was added
+
+`cad/src/product_model.py` exposes `product_parts()` (58 parts: 11 shell, 18 internal, 23 accessory, 6 context), `TITLE` and `RENDER_VIEWS` (hero from the front right looking back along the arm, exploded, and a detail view of the controller alone from the front left). It reuses PARAMS, LV_ANGLES, head_frame() and the reference receptacle from `cad/src/model.py`, in the same local frame; every main dimension and interface (twist-lock base, blades and contacts, gasket, dome, window, M12 socket position, board height, sensor head position and size, radar tilt, port pitch, clamp pitch) is as model.py. It adds:
+
+- Controller base: fillets, grip grooves, a raised orientation mark, tin-plated power blades, gold low-voltage pads, a separate rubber gasket, and a hex M12 panel socket with a knurled plug and overmold.
+- Dome: filleted top and foot, a teal accent band, a raised label with print, and a clear window over the light pipe.
+- Controller internals in the model.py envelopes: surge carrier with two varistors and the thermal fuse; encapsulated supply with a label; fail-on relay with a label; metering carrier and IC; controller board with the shielded radio module, dimming stage and clock ICs, the supercapacitor with a sleeve band, the antenna, the light pipe and the light sensor.
+- Sensor head: filleted housing with a parting line to a 15 mm lid (face down), a dark radar-transparent window on the +X face with a teal accent line, a label, four lid screws, the cable gland on the +Y side, the tilted radar module with patch antennas and front-end IC, the head board and components, two M12 expansion sockets with caps (one teal), a folded bracket with bolts, and two band clamps with rubber liners and worm housings.
+- M12 cable along the arm with two cable ties.
+- Context (existing street furniture, not in the BOM): a compact LED luminaire head with heat-sink fins and lens, the receptacle from model.py, and a 500 mm section of the lamp arm.
+
+`README.md` now shows `media/render-hero.png` and links `media/render-exploded.png`; the orchestrator produces both files.
+
+### Differences from model.py (Proposed, awaiting Amish)
+
+1. **Luminaire head.** concept_media.py uses a 650 x 320 mm cobra head; the appearance model uses a compact 390 x 250 mm LED head with fins and a neck round the arm, so the 94 mm controller is not lost in the hero render. The receptacle position and height are unchanged. Proposed, awaiting Amish. Recommendation: accept for the product renders only; the concept media and drawing keep the reference head.
+2. **M12 cable route.** model.py runs the cable diagonally from the socket face; here it leaves straight through the plug, drops to the arm, and wraps diagonally round to the +Y side before the drop to the head gland, instead of right-angle steps. The socket, gland side and end points are unchanged. Proposed, awaiting Amish. Recommendation: accept; the route is not fixed at TRL 3.
+3. **Band clamps.** model.py shows each clamp as one 5 mm by 20 mm ring. The appearance model splits it into a 1.5 mm rubber liner (20 mm wide) and a 1.5 mm stainless band (14 mm wide) with a worm housing, as BOM line 15 describes. The outer radius is 2 mm smaller than the model.py envelope. Proposed, awaiting Amish. Recommendation: accept.
+4. **Bracket.** model.py shows a solid 130 x 30 x 15 mm block; the appearance model is a folded channel with saddles under the clamps and four bolts, inside the same envelope. Proposed, awaiting Amish. Recommendation: accept, matching "folded aluminum bracket" on BOM line 15.
+5. **Added appearance details.** Grip grooves, orientation mark, accent band and labels, the M12 plug, port caps and cable ties are not separate BOM lines; they fall under BOM lines 1, 2, 10, 14 and 16. No new BOM lines are implied. No lit indicator was added, because the design has none. Proposed, awaiting Amish. Recommendation: accept.
+6. **Render groups.** The sensor head, bracket, clamps, plug and cable are in the "accessory" group so the detail view shows the controller alone. Rendering choice only.
+
+### Status
+
+This is an appearance model only: no tolerances, no fabrication detail, nothing past TRL 3. `trl: 3` and `trl_target: 3` are unchanged, and TRL 4 remains on hold. model.py, the BOM and the other documents were not edited.
+
 ## Session 2026-09-26: sources strengthened
 
 Amish asked on 2026-09-26 to fix the weaker sources. README changes only; no controlled document changed.
