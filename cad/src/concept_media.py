@@ -70,7 +70,7 @@ KEY_FIGURES = [
     "120 to 277 V AC; 0 to 10 V dimming; fails on at night",
     "100 W lamp at 40 N: 432 kWh/yr to 275 to 285 (34 to 36 %)",
     "24 GHz radar: presence only, no images or audio",
-    "LoRaWAN; 0.68 W average; $130 in parts (indicative)",
+    "LoRaWAN; 0.68 W average; USD 143 in parts (indicative)",
 ]
 
 # LPN-CAL-001 section 2, dimmed driver model (estimates)
@@ -121,9 +121,15 @@ def make_hero():
     elev, azim, size, dpi = 20, -62, (8, 6), 160
     concept._render(scene, tmp / "scene.png", elev=elev, azim=azim, size=size, dpi=dpi)
     concept._render(context + parts, tmp / "close.png", elev=22, azim=-58, size=(5, 4), dpi=160)
-    W, H = size[0] * dpi, size[1] * dpi
-    proj = _project([p.shape for p in scene], elev, azim, W, H)
-    cx, cy = proj((REC_X - 150, 0, Z0))
+    # The kit renderer crops and frames the scene, so locate the luminaire by rendering the same scene
+    # once more with a small magenta marker at the receptacle and finding the marker's pixels.
+    from build123d import Sphere
+    marker = Part("marker", Pos(REC_X - 150, 0, Z0) * Sphere(120), "#FF00FF")
+    concept._render(scene + [marker], tmp / "marker.png", elev=elev, azim=azim, size=size, dpi=dpi)
+    mk = plt.imread(tmp / "marker.png")[..., :3]
+    sel = (mk[..., 0] > 0.6) & (mk[..., 1] < 0.35) & (mk[..., 2] > 0.6)
+    ys_m, xs_m = np.nonzero(sel)
+    cx, cy = float(xs_m.mean()), float(ys_m.mean())
 
     img = plt.imread(tmp / "scene.png"); close = plt.imread(tmp / "close.png")
     fig = plt.figure(figsize=size, dpi=dpi)
@@ -141,8 +147,8 @@ def make_hero():
     pc = _project([p.shape for p in context + parts], 22, -58, 800, 640)
     loc = lambda q: (q[0] - REC_X, q[1], q[2] - Z0)
     ox, oy = max(x0 - m, 0), max(y0 - 3 * m, 0)
-    for pt, txt, dx, dy in (((REC_X, 0, Z0 + 95), "LampNode controller\n(twist-lock, items 1 to 9)", -120, -12),
-                            ((REC_X + HX, 0, Z0 + H_TOP - 75), "Sensor head\n(items 11 to 15)", 0, 45)):
+    for pt, txt, dx, dy in (((REC_X, 0, Z0 + 95), "LampNode controller\n(twist-lock, items 1 to 9, 17)", -120, -12),
+                            ((REC_X + HX, 0, Z0 + H_TOP - 75), "Sensor head\n(items 11 to 15, 18)", 0, 45)):
         u, v = pc(loc(pt))
         ins.annotate(txt, (u - ox, v - oy), (u - ox + dx, v - oy + dy), fontsize=6.5, color=concept.INK,
                      ha="center", va="bottom" if dy < 0 else "top",
@@ -165,10 +171,10 @@ if __name__ == "__main__":
     render_all(parts, project="LampNode", title="Streetlight controller concept", dwg_no="LPN-DWG-010", date="2026-09-25",
                key_figures=KEY_FIGURES, scale_figure=False, context=context, flow=FLOW,
                cut_exclude=("M12 port and cable", "Sensor head enclosure", "24 GHz radar presence sensor",
-                            "Sensor head board", "Expansion ports (2)", "Arm band clamps"))
+                            "Sensor head board", "Expansion ports (2)", "Arm band clamps", "Head internal plate"))
     # cutaway again with numbered callouts matching the BOM (render_all draws it unlabeled)
     head_names = ("M12 port and cable", "Sensor head enclosure", "24 GHz radar presence sensor",
-                  "Sensor head board", "Expansion ports (2)", "Arm band clamps")
+                  "Sensor head board", "Expansion ports (2)", "Arm band clamps", "Head internal plate")
     concept._render(concept.cutaway_parts([p for p in parts if p.name not in head_names]),
                     ROOT / "media" / "cutaway.png", azim=-90, elev=18, labels=True,
                     title="LampNode: cutaway of the controller")

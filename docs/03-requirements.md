@@ -3,9 +3,9 @@ doc_id: LPN-REQ-001
 title: LampNode requirements
 project: LampNode
 doc_type: Requirements
-version: "0.4"
+version: "0.5"
 status: Draft
-date: '2026-09-25'
+date: '2026-10-01'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -25,6 +25,10 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Recommendations accepted by Amish (DDR-002)
+- version: "0.5"
+  date: '2026-10-01'
+  author: Amish Chadha
+  change: R16 reported against the value-engineering target for the constructable design (LPN-DDR-003)
 ---
 
 # LampNode requirements
@@ -52,9 +56,9 @@ Table 1. Requirements
 | R13 | Host other sensors | Two sealed 5-pole M12 expansion ports with the FieldNode sensor port pinout, 12 V SELV, 3 W total, limited by firmware to 2.5 W total when the controller interior is above 50 °C (LPN-DDR-002, O3), cable up to 10 m, whenever the luminaire feed is live. Hosted sensors that need power around the clock on cabinet-switched feeders bring their own storage, such as a FieldNode core (redefined, LPN-DDR-001 D7) | Power budget; design review | Met on paper with the firmware port limit: 3.40 W peak against 3.57 W at 64 °C (3.90 W against 3.55 W without it) |
 | R14 | Privacy | Presence only: no images, audio or personal identifiers are captured or leave the device; optional 15 min presence counts | Design review; open firmware | Met (design review) |
 | R15 | Secure and open | LoRaWAN 1.0.4 or later with AES-128 session keys; signed firmware; published payload format; works with any LoRaWAN network server. A TALQ bridge belongs to CityTwin, not to LampNode (redefined, LPN-DDR-001 D10) | Firmware sketch review | Met (design review): 25.7 s of airtime a day at SF9 |
-| R16 | Affordable | Controller and one sensor head $150 or less in parts at prototype quantities | Priced BOM (`bom/bom.csv`) | Met: $130.00 |
+| R16 | Affordable | Controller and one sensor head $150 or less in parts at prototype quantities | Priced BOM (`bom/bom.csv`) | USD 143.00 for the constructable design, USD 7.00 under the USD 150 value-engineering target |
 
-Summary: 0 not met, 4 at risk (R3, R6, R7, R11), 11 met on paper or by design review, 1 not verifiable at TRL 3 (R1).
+Summary: 0 not met, 4 at risk (R3, R6, R7, R11), 11 met on paper, by design review or under the value-engineering target, 1 not verifiable at TRL 3 (R1). The `budget_usd` figure behind R16 is a value-engineering target, not a spending limit.
 
 ## Requirements at risk
 

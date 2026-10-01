@@ -3,9 +3,9 @@ doc_id: LPN-PRC-001
 title: LampNode design precis
 project: LampNode
 doc_type: Design precis
-version: "0.4"
+version: "0.5"
 status: Draft
-date: '2026-09-25'
+date: '2026-10-01'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -25,6 +25,10 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Recommendations accepted by Amish (DDR-002)
+- version: "0.5"
+  date: '2026-10-01'
+  author: Amish Chadha
+  change: Design made constructable (LPN-DDR-003); component descriptions, mass and cost updated; budget treated as a value-engineering target
 ---
 
 # LampNode design precis
@@ -33,9 +37,9 @@ revisions:
 
 LampNode is a twist-lock controller that replaces the photocell on top of an LED streetlight, plus a small sensor head clamped under the lamp arm. The controller switches and dims the luminaire over its standard 0 to 10 V input, follows a night schedule held on the device, raises the light when the sensor head's radar sees someone approaching, measures the lamp's energy and reports faults over LoRaWAN. The sensor head also offers two powered, sealed ports for other city sensors.
 
-The TRL 3 calculations (LPN-CAL-001) put the energy of a 100 W luminaire at 40° N at about 432 kWh a year under a photocell and about 275 to 285 kWh with the reference presence profile, a saving of **34.1 to 36.4 %** against the 35 % target of R7. The TRL 2 estimate of about 41 % assumed nights that were too uniform. The controller draws 0.68 W on average, and the parts cost $130.00 against the $150 budget. Four requirements are at risk on paper (R3, R6, R7, R11); none is clearly not met. R13 is met on paper once the firmware limits the hosted ports to 2.5 W above 50 °C inside. The design choices below were decided by Amish on 2026-09-25 (LPN-DDR-001, LPN-DDR-002).
+The TRL 3 calculations (LPN-CAL-001) put the energy of a 100 W luminaire at 40° N at about 432 kWh a year under a photocell and about 275 to 285 kWh with the reference presence profile, a saving of **34.1 to 36.4 %** against the 35 % target of R7. The TRL 2 estimate of about 41 % assumed nights that were too uniform. The controller draws 0.68 W on average, and the parts are estimated at USD 143.00 against a USD 150 value-engineering target (USD 7.00 under it). Four requirements are at risk on paper (R3, R6, R7, R11); none is clearly not met. R13 is met on paper once the firmware limits the hosted ports to 2.5 W above 50 °C inside. The design choices below were decided by Amish on 2026-09-25 (LPN-DDR-001, LPN-DDR-002).
 
-Figure 1 (`media/hero.png`) shows LampNode on a 7.8 m street pole with a 1.75 m person for scale; Figure 2 (`media/exploded.png`) numbers the parts to match `bom/bom.csv`; Figure 3 (`media/cutaway.png`) shows the inside of the controller; Figure 4 (`media/flow.png`) shows the annual energy; Figure 5 (`cad/drawings/LPN-DWG-001.pdf`) is the general arrangement at Rev P2, generated from `cad/src/model.py`.
+Figure 1 (`media/hero.png`) shows LampNode on a 7.8 m street pole with a 1.75 m person for scale; Figure 2 (`media/exploded.png`) numbers the parts to match `bom/bom.csv`; Figure 3 (`media/cutaway.png`) shows the inside of the controller; Figure 4 (`media/flow.png`) shows the annual energy; Figure 5 (`cad/drawings/LPN-DWG-001.pdf`) is the general arrangement at Rev P3, generated from `cad/src/model.py`. The design was made constructable on 2026-09-30 (LPN-DDR-003); how each part is made and fitted is in the prototype build plan, LPN-BLD-001 (`docs/05-build-plan.md`).
 
 ## How it works
 
@@ -54,21 +58,23 @@ Numbers match Figure 2 and `bom/bom.csv`.
 
 | No. | Component | Role |
 | --- | --- | --- |
-| 1 | Twist-lock base, 7-contact | ANSI C136.41 plug: line, neutral and switched load blades; four low-voltage contacts for dimming and two auxiliary lines. There is no earth contact |
-| 2 | Dome cover | UV-stabilized ASA, 90 mm diameter, 72 mm tall, with a clear window over the light sensor; 97 mm tall with the base |
+| 1 | Twist-lock base, 7-contact | ANSI C136.41 plug: line, neutral and switched load blades; four low-voltage contacts for dimming and two auxiliary lines. There is no earth contact. Six countersunk screws from underneath hold the dome and the board stack |
+| 2 | Dome cover | UV-stabilized ASA, 90 mm diameter, 72 mm tall on a 1 mm gasket, 97 mm tall with the base; three screw bosses, a flat pad for the M12 socket and an 8 mm light-pipe hole |
 | 3 | Surge protection and fuse | Thermal fuse and a thermally protected 20 mm, 385 V class varistor line to neutral; TVS diodes on the low-voltage leads |
 | 4 | Isolated power supply | 85 to 305 V AC in, 12 V out, 5 W; creates the SELV side that feeds the electronics, the dimming output and the expansion ports |
 | 5 | Fail-on relay | Normally closed, 16 A, rated for 80 A inrush or better; coil (about 0.4 W) energized in daytime only |
 | 6 | Energy metering | Single-phase metering IC with a 2 mΩ shunt on the mains side, linked to the controller through a digital isolator; one-point calibration at build |
 | 7 | Controller and LoRaWAN radio | STM32WL-class module shared with FieldNode, TCXO real-time clock, accelerometer, 0 to 10 V output stage, charge-pump coil drive, 0.22 F supercapacitor for the last message |
 | 8 | Antenna | Sub-GHz antenna inside the dome, above the luminaire's metal body |
-| 9 | Light sensor and pipe | Ambient light sensor under the dome window, for dusk and dawn and for day-burner checks |
-| 10 | M12 port and cable | 5-pole M12 on the side of the base and about 1 m of cable along the arm to the sensor head: 12 V and a two-wire serial link |
+| 9 | Light sensor and pipe | Ambient light sensor under a clear 8 mm rod sealed through the dome top, for dusk and dawn and for day-burner checks |
+| 10 | M12 port and cable | 5-pole M12 socket in a flat pad on the pole side of the dome and about 1 m of cable along the arm to the sensor head: 12 V and a two-wire serial link |
 | 11 | Sensor head enclosure | IP66 box 120 x 90 x 60 mm clamped under the arm, 470 mm from the receptacle toward the pole |
 | 12 | 24 GHz radar presence sensor | Doppler module with I/Q output, tilted 25° below horizontal along the street; motion, speed and direction only |
 | 13 | Sensor head board | Small microcontroller that turns the radar signal into presence events, and switches power to the expansion ports |
 | 14 | Expansion ports (2) | Sealed 5-pole M12 sockets with the FieldNode sensor port pinout (pinout still open at FieldNode), 12 V SELV, 3 W total |
-| 15 | Arm band clamps | Two stainless band clamps for 50 to 80 mm arms and a bracket; no drilling of the arm |
+| 15 | Arm band clamps | Two stainless band clamps for 50 to 80 mm arms through slots in a folded aluminium bracket, with rubber strips where the arm rests; no drilling of the arm |
+| 17 | Controller boards and fixings | Round mains board on three spacers carrying items 3 to 6, standoffs to the controller board, screws, inserts and the dome gasket |
+| 18 | Head internal plate | Printed plate on the box bosses, carrying the head board and a 25° cradle for the radar |
 
 The luminaire, its receptacle, the arm and the pole are existing street furniture and are not part of LampNode. The model shows the receptacle and a length of arm as grey reference parts.
 
@@ -100,9 +106,9 @@ The saving depends mostly on traffic. With the dimmed driver model it is 40.4 % 
 | Status airtime | 267 ms per message, 25.7 s a day at SF9 | R15 |
 | Interior temperature at 45 °C in sun | 63 to 65 °C | R11 at risk |
 | Varistor energy at 5 kA | 118 J | R11 |
-| Mass | Controller 0.34 kg; head with clamps and cable 0.45 kg | |
-| Parts cost | $130.00 (controller $68.00, head $56.00, hardware $6.00) | R16 met |
-| Payback on parts | 3.5 to 8.8 years at $0.25 to $0.10 per kWh, before labor | |
+| Mass | Controller 0.33 kg; head with clamps and cable 0.42 kg | |
+| Parts cost | USD 143.00 (controller USD 75.00, head USD 61.00, hardware USD 7.00) against the USD 150 value-engineering target | R16: USD 7.00 under the target |
+| Payback on parts | 3.9 to 9.7 years at USD 0.25 to 0.10 per kWh, before labor | |
 
 ## Key design choices
 

@@ -1,5 +1,57 @@
 # Review note: LampNode
 
+## Session 2026-10-01: build plan and design for construction (kit 1.7.0)
+
+On 2026-09-30 Amish approved the build plan format and asked for it across all repos, with outstanding decisions kept in a separate design decisions register, and wrote: "If you are realising that the design cannot be built as per concept - fix the design assumptions to match and be physically feasible as you draw the illustrations." On 2026-10-01 he asked for budgets to be treated as value-engineering targets. This session ran the `/build-plan` work on LampNode. This section is placed at the top to keep this note's newest-first order.
+
+### What was done
+
+- Kit 1.7.0 installed (`.kit/`, `.claude/commands/`); `CLAUDE.md` now matches `.kit/CLAUDE.md`.
+- Constructability review of every part with build123d: `cad/src/model.py` rebuilt as `build_components()` with every part as made or bought and fixed to its neighbours, and 80 constructability checks (`python cad/src/model.py --check`), all passing.
+- `docs/decisions/0003-design-for-construction.md` (LPN-DDR-003 v0.1, Draft): the eleven changes below, made under Amish's 2026-09-30 instruction to make the design physically buildable; open for his review.
+- `bom/bom.csv`: lines 17 (controller boards and fixings) and 18 (head internal plate) added; lines 15 and 16 repriced; specifications updated. `bom/bom-notes.md` updated.
+- Calculations rerun: LPN-CAL-001 v0.3 (mass, cost and R16 against the value-engineering target); `docs/04-calcs/results.csv` regenerated. LPN-PRC-001 v0.5 and LPN-REQ-001 v0.5 updated to match.
+- STEP and STL regenerated; general arrangement LPN-DWG-001 bumped to Rev P3; concept media regenerated (`media/hero.png`, `exploded.png`, `cutaway.png`, `flow.png`, `concept-blueprint.*`, `model.glb`).
+- `cad/src/build_plan_media.py`: overview, eight making sketches (LPN-DWG-101 to 108), two layouts (base drilling, mains board), eight joint close-ups, eleven step pictures and a wiring diagram.
+- `docs/05-build-plan.md` (LPN-BLD-001 v0.1) and `docs/06-design-decisions.md` (LPN-DEC-001 v0.1) written; both added to `trl_evidence`; `design_state: constructable` in `project.yaml`; README links and a "Building the prototype" section added.
+
+### Design changes made for construction (LPN-DDR-003)
+
+1. **P1, board stack.** The supply, relay, surge parts and controller board no longer float: an 80 mm mains board on three 12 mm spacers and an 80 mm controller board on three 30 mm standoffs, clamped by three M3 x 45 screws from under the base. Controller board centre 69.4 mm (was 66).
+2. **P2, dome fixing.** Three printed bosses with M3 heat-set inserts, three M3 x 30 screws from under the base, a 1 mm EPDM gasket; the dome body is 71 mm on the gasket, so the controller stays 97 mm tall. The mains board is notched for the bosses.
+3. **P3, M12 socket.** Moved from the curved side of the bought base to a flat printed pad on the pole side of the dome, between the boards.
+4. **P4, light window.** An 8 mm clear rod sealed through an 8.2 mm hole replaces the open 16 mm window.
+5. **P5, antenna.** A flexible strip stuck inside the dome wall replaces the rod on the board, matching BOM line 8.
+6. **P6, part envelopes.** Supply 23 x 38 x 18 mm (a real 5 W module size); one standing 20 mm varistor with the thermal fuse.
+7. **P7, base.** Six holes on a 60 mm circle between the blades, inside the gasket ring, countersunk from below.
+8. **P8, sensor head inside.** Box and 15 mm lid; a printed internal plate on the four box bosses carrying the head board and a 25° radar cradle. Radar centre 34.2 mm below the box top (was 30).
+9. **P9, ports and gland.** Ports through the lid with nuts inside and plug-in leads; an M16 cable gland on the side wall.
+10. **P10, bracket.** A folded 2 mm aluminium channel 110 mm long (the concept block was 130 mm, longer than the box), rubber strips on the flanges, band slots; the bands pass over the arm, through the slots and across the web; four M4 screws with sealing washers into the box top.
+11. **P11, cable route.** Level out of the dome, past the luminaire, along the top of the arm with ties; about 0.7 m of the 1 m cordset used.
+
+### Key results
+
+- Value-engineering target: USD 150. Estimated cost of the constructable design: USD 143.00 (USD 7.00 under the target); the concept was USD 130.00. `budget_usd` unchanged.
+- Mass: controller 0.33 kg (was 0.34 kg); sensor head with clamps and cable 0.42 kg (was 0.45 kg).
+- Requirement status unchanged: 0 not met, 4 at risk (R3, R6, R7, R11), 11 met on paper, by design review or under the value-engineering target, 1 not verifiable at TRL 3 (R1).
+- Energy, power, inrush, radar, metering, surge and thermal results unchanged.
+
+### Proposed, awaiting Amish
+
+All open items are in the design decisions register (`docs/06-design-decisions.md`): accept LPN-DDR-003 (recommended); the hand-wired mains board for bench work only (A1, recommended); the M12 socket on the dome and the renders (A2, recommended); the first partner (O1, no recommendation); the port pinout with FieldNode; and the 2026-09-26 appearance-model differences.
+
+### Stale media
+
+The photoreal renders `media/render-*.png`, `media/card.png` and `media/social-preview.png`, and the appearance model `cad/src/product_model.py`, still show the concept: the M12 socket on the base, the solid bracket block and the 16 mm window. They are made on Amish's Mac and were not regenerated here. (The render files referenced by the README are not present in this cloud copy.)
+
+### Safety
+
+The design changes do not touch the fail-on relay, the surge stage or the isolation between the mains and 12 V sides. The build plan keeps the first prototype on the bench: unpowered checks, an insulation check, first power only through an isolating transformer and an RCD with the dome on, dummy loads only, and no street installation of the hand-wired board (safety stops S1 to S7).
+
+### Recommended next step
+
+Amish reviews LPN-DDR-003 and the register. TRL 4 (buying parts, building and testing to the plan) stays on hold.
+
 ## Session 2026-09-26: product appearance model and photoreal renders
 
 Amish chose this repo for the first batch of product renders on 2026-09-26. This section is placed at the top to keep this note's newest-first order.

@@ -15,7 +15,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "cad" / "src"))
-from model import PARAMS as P, build_parts, head_frame  # noqa: E402
+from model import PARAMS as P, build_parts, build_components, head_frame  # noqa: E402
 
 OUT = []  # (key, value, unit) for results.csv
 
@@ -428,13 +428,19 @@ def hosted():
 def mass():
     section("12. Mass (estimates; model volumes where the part is modeled as a shell)")
     vols = {n: s.volume / 1e3 for n, s, _, _, _ in build_parts()}
-    dome = vols["Dome cover, UV-stable"] * 1.07 / 1000
-    box = vols["Sensor head enclosure"] * 1.20 / 1000
-    ctrl = {"dome, ASA": dome, "base, PC at 35 % of the solid envelope, brass blades": 0.35 * vols["Twist-lock base, 7-contact"] * 1.2 / 1000 + 0.02,
-            "power supply module": 0.05, "relay": 0.02, "surge stage and fuse": 0.03,
-            "controller board and supercapacitor": 0.03, "antenna and light pipe": 0.01, "potting, screws": 0.03}
+    comp = build_components()
+    cv = {k: c.shape.volume / 1e3 for k, c in comp.items()}
+    dome = cv["dome"] * 1.07 / 1000
+    box = (cv["hbody"] + cv["hlid"]) * 1.20 / 1000
+    ctrl = {"dome, ASA": dome, "base, PC at 35 % of the solid envelope, brass blades": 0.35 * cv["base"] * 1.2 / 1000 + 0.02,
+            "power supply module": 0.03, "relay": 0.02, "surge stage and fuse": 0.02,
+            "controller board and supercapacitor": 0.03, "antenna and light pipe": 0.01,
+            "mains board (FR4), spacers, standoffs, inserts, screws, gasket": cv["mboard"] * 1.85 / 1000 + 0.02,
+            "wiring, potting": 0.02}
     head = {"enclosure, PC": box, "radar": 0.02, "head board": 0.02, "two M12 ports": 0.03,
-            "two band clamps and bracket": 0.15, "M12 port and 1 m cable": 0.07}
+            "internal plate and cradle, ASA at 60 % infill": 0.6 * cv["hplate"] * 1.07 / 1000,
+            "bracket (aluminium), rubber strips, two band clamps": cv["bracket"] * 2.70 / 1000 + cv["liners"] * 1.3 / 1000 + 0.04,
+            "M12 socket, plug and 1 m cable, gland": 0.09}
     mc, mh = sum(ctrl.values()), sum(head.values())
     for k, v in ctrl.items():
         out(f"  controller: {k}", v, "kg", "{:.3f}")
@@ -455,17 +461,17 @@ def cost(saved):
         n = int(r["item"].split()[0])
         c = float(r["qty"]) * float(r["unit_cost_usd"])
         tot += c
-        if n <= 9:
+        if n <= 9 or n == 17:
             ctrl += c
-        elif n <= 15:
+        elif n <= 15 or n == 18:
             head += c
     out("BOM lines", len(rows), "", "{:.0f}")
-    out("controller parts (items 1 to 9)", ctrl, "USD", "{:.2f}")
-    out("sensor head, cable and ports (items 10 to 15)", head, "USD", "{:.2f}")
+    out("controller parts (items 1 to 9 and 17)", ctrl, "USD", "{:.2f}")
+    out("sensor head, cable and ports (items 10 to 15 and 18)", head, "USD", "{:.2f}")
     out("hardware and consumables (item 16)", tot - ctrl - head, "USD", "{:.2f}")
     out("BOM total", tot, "USD", "{:.2f}")
-    out("budget_usd (project.yaml)", budget, "USD", "{:.0f}")
-    out("margin", budget - tot, "USD", "{:.2f}")
+    out("value-engineering target (budget_usd, project.yaml)", budget, "USD", "{:.0f}")
+    out("under the value-engineering target by", budget - tot, "USD", "{:.2f}")
     for t in TARIFF:
         out(f"payback on parts at ${t:.2f}/kWh", tot / (saved * t), "years", "{:.1f}")
     return dict(tot=tot, ctrl=ctrl, head=head, budget=budget)
@@ -503,7 +509,7 @@ def main():
         ("R13", "Host other sensors", f"{hs['dv']:.2f} V drop at 10 m; ports limited to {PORT_W_HOT:.1f} W above {T_PORT_LIMIT:.0f} C inside (DDR-002): {th['peak_lim']:.2f} W peak against {th['cap_lim']:.2f} W at {th['T_lim']:.0f} C ({pb['peak']:.2f} W against {th['cap']:.2f} W without the limit)", "Met on paper (firmware port limit)"),
         ("R14", "Privacy", "Doppler radar, no image; presence counts only", "Met (design review)"),
         ("R15", "Secure and open", f"LoRaWAN 1.0.4, open payload; {ra['day9']:.1f} s/day at SF9; TALQ in CityTwin (DDR item 10)", "Met (design review)"),
-        ("R16", "Affordable", f"${co['tot']:.2f} against ${co['budget']}", "Met"),
+        ("R16", "Affordable", f"USD {co['tot']:.2f} against the USD {co['budget']} value-engineering target", f"Under the target by USD {co['budget'] - co['tot']:.2f}" if co['tot'] <= co['budget'] else f"Over the target by USD {co['tot'] - co['budget']:.2f}"),
     ]
     section("Results table")
     for row in status:

@@ -5,6 +5,7 @@ repo: BoujeeEnjinia1701/lampnode         # GitHub repository, shown on every dra
 area: Smart Cities
 trl: 3                   # Technology Readiness Level, see .kit/STANDARDS.md section 9
 trl_target: 3
+design_state: constructable   # concept or constructable, see .kit/STANDARDS.md section 18
 trl_evidence:
   - docs/01-problem.md
   - docs/02-concept.md
@@ -22,6 +23,8 @@ trl_evidence:
   - cad/drawings/LPN-DWG-001.pdf
   - bom/bom.csv
   - bom/bom-notes.md
+  - docs/05-build-plan.md
+  - docs/06-design-decisions.md
 shortlisted: false
 pitch: >-
   An open streetlight controller that dims LED streetlights by schedule and presence, reports faults and hosts other city sensors on the lamp pole.

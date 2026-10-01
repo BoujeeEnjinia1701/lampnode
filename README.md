@@ -2,13 +2,13 @@
 
 ![TRL 3](https://img.shields.io/badge/TRL-3%20of%209-0F766E) ![Hardware: CERN-OHL-S-2.0](https://img.shields.io/badge/hardware-CERN--OHL--S--2.0-111827) ![Software: MIT](https://img.shields.io/badge/software-MIT-111827) [![DOI](https://zenodo.org/badge/1388476938.svg)](https://zenodo.org/badge/latestdoi/1388476938) [![REUSE compliant](https://github.com/BoujeeEnjinia1701/lampnode/actions/workflows/reuse.yml/badge.svg)](https://github.com/BoujeeEnjinia1701/lampnode/actions/workflows/reuse.yml) [![Archived in Software Heritage](https://archive.softwareheritage.org/badge/origin/https://github.com/BoujeeEnjinia1701/lampnode/)](https://archive.softwareheritage.org/browse/origin/?origin_url=https://github.com/BoujeeEnjinia1701/lampnode)
 
-**Area:** Smart Cities · **TRL:** 3 of 9 (proof of concept on paper) · **Prototype budget:** about $150 USD · **Difficulty:** 3 of 5
+**Area:** Smart Cities · **TRL:** 3 of 9 (proof of concept on paper) · **Value-engineering target:** about $150 USD · **Difficulty:** 3 of 5
 
 An open streetlight controller that dims LED streetlights by schedule and presence, reports faults and hosts other city sensors on the lamp pole.
 
 ![LampNode: open streetlight controller with a radar presence head, product render](media/render-hero.png)
 
-[Exploded render](media/render-exploded.png) · [Detail render](media/render-detail.png) · [Interactive 3D model](media/viewer.html) · [Concept blueprint (PDF)](media/concept-blueprint.pdf) · [General arrangement LPN-DWG-001 (PDF)](cad/drawings/LPN-DWG-001.pdf) · [Sizing calculations](docs/04-calcs/01-sizing.md) · [Review note](docs/REVIEW.md)
+[Exploded render](media/render-exploded.png) · [Detail render](media/render-detail.png) · [Interactive 3D model](media/viewer.html) · [Concept blueprint (PDF)](media/concept-blueprint.pdf) · [General arrangement LPN-DWG-001 (PDF)](cad/drawings/LPN-DWG-001.pdf) · [Sizing calculations](docs/04-calcs/01-sizing.md) · [Prototype build plan](docs/05-build-plan.md) · [Design decisions](docs/06-design-decisions.md) · [Review note](docs/REVIEW.md)
 
 ## Concept rationale
 
@@ -60,7 +60,7 @@ An open streetlight controller that dims LED streetlights by schedule and presen
 
 A twist-lock controller replaces the photocell on the luminaire and drives its 0 to 10 V dimming input; a sensor head clamped under the arm carries a 24 GHz radar for presence and two powered M12 ports for other sensors; status and faults go out every 15 min over LoRaWAN.
 
-TRL 3 calculations ([LPN-CAL-001](docs/04-calcs/01-sizing.md)) put a 100 W luminaire at 40° N at about 432 kWh a year under a photocell and 275 to 285 kWh with the reference presence profile, a saving of 34 to 36 % against a 35 % target. The controller draws 0.68 W on average and the parts cost $130 against the $150 budget. No requirement is clearly missed, but four are at risk on paper: relay inrush, presence detection in rain and wind, the energy saving (kept at a 35 % target with the risk accepted) and the temperature margin in full sun. Power for hosted sensors is met on paper because the firmware limits the ports to 2.5 W above 50 °C inside. 347 V and 480 V circuits, DALI-2 D4i dimming and a TALQ bridge are later variants or sibling scope. The design choices were decided by Amish on 2026-09-25 ([LPN-DDR-001](docs/decisions/0001-trl2-review-decisions.md), [LPN-DDR-002](docs/decisions/0002-recommendations-accepted.md)); only the first co-design partner is still open. See the [requirements](docs/03-requirements.md).
+TRL 3 calculations ([LPN-CAL-001](docs/04-calcs/01-sizing.md)) put a 100 W luminaire at 40° N at about 432 kWh a year under a photocell and 275 to 285 kWh with the reference presence profile, a saving of 34 to 36 % against a 35 % target. The controller draws 0.68 W on average, and the parts of the constructable design are estimated at USD 143, USD 7 under the USD 150 value-engineering target. No requirement is clearly missed, but four are at risk on paper: relay inrush, presence detection in rain and wind, the energy saving (kept at a 35 % target with the risk accepted) and the temperature margin in full sun. Power for hosted sensors is met on paper because the firmware limits the ports to 2.5 W above 50 °C inside. 347 V and 480 V circuits, DALI-2 D4i dimming and a TALQ bridge are later variants or sibling scope. The design choices were decided by Amish on 2026-09-25 ([LPN-DDR-001](docs/decisions/0001-trl2-review-decisions.md), [LPN-DDR-002](docs/decisions/0002-recommendations-accepted.md)); only the first co-design partner is still open. See the [requirements](docs/03-requirements.md).
 
 Full design precis: [docs/02-concept.md](docs/02-concept.md)
 
@@ -75,6 +75,12 @@ Full design precis: [docs/02-concept.md](docs/02-concept.md)
 - Two sealed 5-pole M12 expansion ports, 12 V SELV, 3 W total (2.5 W above 50 °C inside)
 
 The parametric model is in [cad/src/model.py](cad/src/model.py), with STEP and STL exports in `cad/step/` and `cad/stl/`. The working bill of materials is in [bom/bom.csv](bom/bom.csv).
+
+## Building the prototype
+
+![LampNode prototype: every component pulled apart and numbered in build order](docs/05-build-plan/overview.png)
+
+The [prototype build plan](docs/05-build-plan.md) (LPN-BLD-001) shows, in pictures, how to make each of the eighteen components and put them together in eleven steps on a bench mock-up of a streetlight; nothing has been built yet. The made parts are a drilled twist-lock base, two round prototype boards, a printed dome with a light-pipe rod, a drilled sensor head box, a printed internal plate with a radar cradle and a folded aluminium bracket; the electronics are bought modules wired at block level. Writing the plan made the design buildable: the parts inside the controller and the head now sit on spacers, standoffs and bosses, the dome screws to the base, the M12 socket moved to a flat pad on the dome, and the bracket became a folded channel that the band clamps pass through (LPN-DDR-003, open for Amish's review). Every picture is drawn from the model, and the model checks that each part touches what it should and clears what it should not.
 
 ## Safety
 

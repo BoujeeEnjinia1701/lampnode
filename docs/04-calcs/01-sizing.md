@@ -3,9 +3,9 @@ doc_id: LPN-CAL-001
 title: LampNode sizing calculations
 project: LampNode
 doc_type: Calculation note
-version: "0.2"
+version: "0.3"
 status: Draft
-date: '2026-09-25'
+date: '2026-10-01'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -17,6 +17,10 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Recommendations accepted by Amish (DDR-002). Firmware port limit (2.5 W above 50 °C inside) added to section 11; R13 now met on paper; engineering changes confirmed
+- version: "0.3"
+  date: '2026-10-01'
+  author: Amish Chadha
+  change: Mass and cost updated for the constructable design (LPN-DDR-003); budget reported as a value-engineering target
 ---
 
 # LampNode sizing calculations
@@ -137,18 +141,18 @@ At 65 °C the derated supply gives about 3.55 W, against the 3.90 W peak with bo
 
 ## 12. Mass
 
-*Table 5. Mass estimate.*
+*Table 5. Mass estimate for the constructable design (LPN-DDR-003).*
 
 | Assembly | Mass | Basis |
 | --- | --- | --- |
-| Controller | 0.34 kg | Dome from the model volume in ASA (0.073 kg), base at 35 % of its solid envelope in PC plus brass blades (0.097 kg), estimates for the parts inside |
-| Sensor head with clamps and 1 m cable | 0.45 kg | Enclosure from the model volume in PC (0.157 kg), 0.150 kg for clamps and bracket, estimates for the rest |
+| Controller | 0.33 kg | Dome from the model volume in ASA (0.077 kg), base at 35 % of its solid envelope in PC plus brass blades (0.092 kg), mains board, spacers, standoffs and screws (0.033 kg), estimates for the parts inside |
+| Sensor head with clamps and 1 m cable | 0.42 kg | Box and lid from the model volume in PC (0.156 kg); folded aluminium bracket, rubber strips and two band clamps (0.084 kg); printed internal plate at 60 % infill (0.018 kg); estimates for the rest |
 
-TRL 2 gave 0.25 kg for the controller; 0.34 kg is closer to typical photocontrols of this size. No requirement sets a mass.
+TRL 2 gave 0.25 kg for the controller; the concept model gave 0.34 kg and 0.45 kg. The constructable design is a little lighter because the solid bracket block of the concept became a folded 2 mm channel and the power supply envelope is a real 5 W module size. No requirement sets a mass.
 
 ## 13. Cost (R16)
 
-`bom/bom.csv` has 16 lines, all priced: $68.00 for the controller (items 1 to 9), $56.00 for the sensor head, cable and ports (items 10 to 15) and $6.00 of hardware, **$130.00** in all against the $150 budget, a margin of $20.00. R16 is met. The total rose from $124 because of the TCXO clock (+$3), the high-inrush relay (+$2) and the 385 V surge stage with TVS diodes (+$1). At 148 kWh a year the parts pay back in 3.5 years at $0.25 per kWh and 8.8 years at $0.10 per kWh, before installation labor.
+Value-engineering target: USD 150 (`budget_usd`, a hypothetical control target, not a limit). Estimated cost of the constructable design: USD 143.00 (USD 7.00 under the target). `bom/bom.csv` has 18 lines, all priced: USD 75.00 for the controller (items 1 to 9 and 17), USD 61.00 for the sensor head, cable and ports (items 10 to 15 and 18) and USD 7.00 of hardware. Making the design constructable added line 17, the controller boards and fixings (USD 7.00), and line 18, the printed head plate (USD 4.00), and repriced line 15, the folded bracket (USD 6.00 to 7.00), and line 16, sealing washers and cable ties (USD 6.00 to 7.00); the total rose from USD 130.00. At 148 kWh a year the parts pay back in 3.9 years at USD 0.25 per kWh and 9.7 years at USD 0.10 per kWh, before installation labor.
 
 ## 14. Results
 
@@ -171,7 +175,7 @@ TRL 2 gave 0.25 kg for the controller; 0.34 kg is closer to typical photocontrol
 | R13 | Host other sensors | 0.25 V drop at 10 m; ports limited to 2.5 W above 50 °C inside: 3.40 W peak against 3.57 W at 64 °C (3.90 W against 3.55 W without the limit) | Met on paper (firmware port limit) |
 | R14 | Privacy | Doppler radar, no image; presence counts only | Met (design review) |
 | R15 | Secure and open | LoRaWAN 1.0.4, published payload; 25.7 s a day at SF9; TALQ in CityTwin | Met (design review) |
-| R16 | Affordable | $130.00 against $150 | Met |
+| R16 | Affordable | USD 143.00 against the USD 150 value-engineering target | Under the target by USD 7.00 |
 
 Summary: 0 not met, 4 at risk, 11 met on paper or by design review, 1 not verifiable at TRL 3.
 

@@ -120,31 +120,33 @@ margin with the port limit,0.1671,W
   as a share of 12 V,2.108,%
 controller to head cable current,0.2692,A
   drop over 1 m,0.02723,V
-"  controller: dome, ASA",0.07285,kg
-"  controller: base, PC at 35 % of the solid envelope, brass blades",0.09695,kg
-  controller: power supply module,0.05,kg
+"  controller: dome, ASA",0.07681,kg
+"  controller: base, PC at 35 % of the solid envelope, brass blades",0.09221,kg
+  controller: power supply module,0.03,kg
   controller: relay,0.02,kg
-  controller: surge stage and fuse,0.03,kg
+  controller: surge stage and fuse,0.02,kg
   controller: controller board and supercapacitor,0.03,kg
   controller: antenna and light pipe,0.01,kg
-"  controller: potting, screws",0.03,kg
-"  head: enclosure, PC",0.1571,kg
+"  controller: mains board (FR4), spacers, standoffs, inserts, screws, gasket",0.03326,kg
+"  controller: wiring, potting",0.02,kg
+"  head: enclosure, PC",0.1559,kg
   head: radar,0.02,kg
   head: head board,0.02,kg
   head: two M12 ports,0.03,kg
-  head: two band clamps and bracket,0.15,kg
-  head: M12 port and 1 m cable,0.07,kg
-controller mass,0.3398,kg
-sensor head with clamps and cable,0.4471,kg
-BOM lines,16,
-controller parts (items 1 to 9),68,USD
-"sensor head, cable and ports (items 10 to 15)",56,USD
-hardware and consumables (item 16),6,USD
-BOM total,130,USD
-budget_usd (project.yaml),150,USD
-margin,20,USD
-payback on parts at $0.10/kWh,8.81,years
-payback on parts at $0.25/kWh,3.524,years
+"  head: internal plate and cradle, ASA at 60 % infill",0.0178,kg
+"  head: bracket (aluminium), rubber strips, two band clamps",0.08381,kg
+"  head: M12 socket, plug and 1 m cable, gland",0.09,kg
+controller mass,0.3323,kg
+sensor head with clamps and cable,0.4176,kg
+BOM lines,18,
+controller parts (items 1 to 9 and 17),75,USD
+"sensor head, cable and ports (items 10 to 15 and 18)",61,USD
+hardware and consumables (item 16),7,USD
+BOM total,143,USD
+"value-engineering target (budget_usd, project.yaml)",150,USD
+under the value-engineering target by,7,USD
+payback on parts at $0.10/kWh,9.691,years
+payback on parts at $0.25/kWh,3.876,years
 
 requirement,title,result,status
 R1,Fit the socket,Representative ANSI C136.41 base in the model; fit and 5 min change not checkable on paper,Not verifiable at TRL 3
@@ -162,4 +164,4 @@ R12,Fail safe,"NC relay, open 0 to 10 V = full, coil needs a toggling drive, day
 R13,Host other sensors,0.25 V drop at 10 m; ports limited to 2.5 W above 50 C inside (DDR-002): 3.40 W peak against 3.57 W at 64 C (3.90 W against 3.55 W without the limit),Met on paper (firmware port limit)
 R14,Privacy,"Doppler radar, no image; presence counts only",Met (design review)
 R15,Secure and open,"LoRaWAN 1.0.4, open payload; 25.7 s/day at SF9; TALQ in CityTwin (DDR item 10)",Met (design review)
-R16,Affordable,$130.00 against $150,Met
+R16,Affordable,USD 143.00 against the USD 150 value-engineering target,Under the target by USD 7.00
