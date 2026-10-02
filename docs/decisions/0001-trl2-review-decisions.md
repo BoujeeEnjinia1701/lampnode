@@ -3,9 +3,9 @@ doc_id: LPN-DDR-001
 title: LampNode TRL 2 review decisions
 project: LampNode
 doc_type: Design decision record
-version: "0.2"
+version: "0.3"
 status: Draft
-date: '2026-09-25'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -17,12 +17,16 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Recommendations accepted by Amish (DDR-002)
+- version: "0.3"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: 'O1 (first partner and region) decided by Amish on 2026-10-02'
 ---
 
 # 0001: TRL 2 review decisions
 
 - **Date:** 2026-09-25
-- **Status:** D1 to D10 and O2 to O8 decided by Amish, 2026-09-25: go with recommendation (see LPN-DDR-002). O1 has no recommendation and remains proposed, awaiting Amish.
+- **Status:** D1 to D10 and O2 to O8 decided by Amish, 2026-09-25: go with recommendation (see LPN-DDR-002). O1 had no recommendation; it was decided by Amish on 2026-10-02 as recommended in LPN-DEC-001.
 
 ## Context
 
@@ -57,7 +61,7 @@ No budget change, and no reworded pitch or problem line, was recommended at TRL 
 
 | # | Item | Status |
 | --- | --- | --- |
-| O1 | First partner (city, utility or campus) and region for co-design | Proposed, awaiting Amish. No recommendation was made at TRL 2 |
+| O1 | First partner (city, utility or campus) and region for co-design | No recommendation was made at TRL 2. Decided by Amish, 2026-10-02 (LPN-DEC-001): a US partner on the 915 MHz band; first candidate to approach: a university campus or municipal utility in the Dallas-Fort Worth area that runs LED streetlights with ANSI C136.41 sockets |
 | O2 | R7 shortfall. LPN-CAL-001 gives 34.1 to 36.4 % against 35 %. Options: (a) relax R7 to 30 % with the reference profile; (b) keep 35 % and move the floor start to 21:00 in the reference profile; (c) keep both and accept R7 at risk until real traffic counts exist. Recommendation: (c), because the road owner sets the profile and the traffic assumption dominates | Decided by Amish, 2026-09-25: go with recommendation: option (c); R7 stays at 35 % and at risk |
 | O3 | R13 hosted power at high temperature (3.90 W peak against 3.55 W at 65 °C). Options: (a) firmware limits the ports to 2.5 W above 50 °C inside; (b) a 10 W supply module (about +$3, slightly more no-load loss). Recommendation: (a) | Decided by Amish, 2026-09-25: go with recommendation: option (a), firmware port limit; applied in LPN-REQ-001 R13 and LPN-CAL-001 section 11 |
 | O4 | TCXO real-time clock for R5 (+$3) | Decided by Amish, 2026-09-25: go with recommendation. In `bom/bom.csv` line 7 |
@@ -71,4 +75,4 @@ No budget change, and no reworded pitch or problem line, was recommended at TRL 
 - R2, R4, R13 and R15 are redefined in LPN-REQ-001 v0.3 to match D9, D5, D7 and D10. The TRL 2 "not met" entries for 347 V and 480 V, D4i, daytime hosted power and TALQ become scope notes, not failures.
 - The TRL 3 design costs $130.00 against the unchanged $150 budget (LPN-CAL-001 section 13).
 - R3, R6, R7, R11 and R13 are at risk on paper and are listed in `docs/REVIEW.md`.
-- All items except O1 are decided by Amish (LPN-DDR-002). R13 is met on paper with the O3 firmware port limit; R3, R6, R7 and R11 stay at risk.
+- All items except O1 are decided by Amish (LPN-DDR-002); O1 was decided on 2026-10-02 (LPN-DEC-001). R13 is met on paper with the O3 firmware port limit; R3, R6, R7 and R11 stay at risk.

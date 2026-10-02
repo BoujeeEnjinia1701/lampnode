@@ -3,9 +3,9 @@ doc_id: LPN-PRB-001
 title: LampNode problem statement
 project: LampNode
 doc_type: Problem statement
-version: "0.4"
+version: "0.5"
 status: Draft
-date: '2026-09-25'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -25,6 +25,10 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Recommendations accepted by Amish (DDR-002)
+- version: "0.5"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: 'First partner and port pinout stated as decided on 2026-10-02 (LPN-DEC-001)'
 ---
 
 # LampNode problem statement
@@ -90,13 +94,13 @@ Most streetlights run at full power from dusk to dawn whether anyone is on the s
 - **Central software interoperability.** The TALQ Smart City Protocol links central management software with device networks from different vendors ([TALQ](https://www.talq-consortium.org/)).
 - **Adaptive lighting evidence.** Dimming schedules can save more energy than lowering a road's lighting class ([Jägerbrand, 2016](https://www.mdpi.com/1996-1073/9/5/357)).
 - **Commercial controllers.** Networked streetlight controllers are sold by many lighting and utility suppliers, generally as part of a proprietary network. A survey of open-hardware controllers has not yet been done (open question 1).
-- **Lab siblings.** LampNode uses the same STM32WL-class LoRaWAN radio as FieldNode and the same 5-pole M12 sensor ports (the pinout is still open at FieldNode), and reports to TwinKit and CityTwin.
+- **Lab siblings.** LampNode uses the same STM32WL-class LoRaWAN radio as FieldNode and the same 5-pole M12 sensor ports (LampNode proposed a pinout to FieldNode on 2026-10-02; FieldNode has still to agree it), and reports to TwinKit and CityTwin.
 
 ## Open questions
 
 1. Are there open-hardware streetlight controllers to learn from or join, rather than start anew?
 2. Socket: ANSI C136.41 7-contact first, Zhaga Book 18 later, was decided by Amish on 2026-09-25 (LPN-DDR-001 D1, LPN-DDR-002).
-3. How common are cabinet-switched feeders in the first partner city? Hosted sensors there need their own storage (LPN-REQ-001 R13). The first partner itself is proposed, awaiting Amish (LPN-DDR-001 O1).
+3. How common are cabinet-switched feeders in the first partner city? Hosted sensors there need their own storage (LPN-REQ-001 R13). The first partner is to be a US partner on the 915 MHz band; the first candidate to approach is a university campus or municipal utility in the Dallas-Fort Worth area (decided 2026-10-02, LPN-DEC-001).
 4. Will a lighting authority accept presence dimming on the roads chosen, and what floor level and hold time will it set?
 5. Which 0 to 10 V and D4i drivers are in the partner's luminaire stock, and how do they behave when the control line is open?
 6. What surge levels and certification does the asset owner require before a device is plugged into its network?

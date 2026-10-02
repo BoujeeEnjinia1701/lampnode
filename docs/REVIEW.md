@@ -296,3 +296,33 @@ Review this note and the media, then decide items 1, 2, 3 and 7. If approved, ru
 - Kit 1.5.0 synced: STANDARDS v1.5 (sections 12 to 15: product renders, storefront images and image quality, public release, authorship and signing), `.kit/cards.py`, `.kit/image_qc.py`, `.kit/release_gate.py`, issue templates, and the `/render-product` and `/release` commands. `CLAUDE.md` now matches `.kit/CLAUDE.md`.
 - Every `media/render-*.png` recaptioned from its original render with the new layout: the title, concept label and repository sit in a band above the render and the view note in a band below it, each line wrapped to the image width, so no text overlaps other text or the render or runs off the image. `media/card.png` and `media/social-preview.png` regenerated with the same rules.
 - `python .kit/image_qc.py` and `python .kit/release_gate.py` pass. trl stays 3.
+
+## Session 2026-10-02: open-decision recommendations approved
+
+Amish, 2026-10-02: "i approve your recommendations for all 555 open decisions." This approves the recommendation for every open decision in the design decisions register. 6 decisions were recorded: each moved to Decisions made, dated 2026-10-02, with the approved recommendation and its record. trl stays 3; no build or test work was done, and the CAD model, BOM quantities and prices, and pictures were not changed.
+
+### Documents changed
+
+- `docs/06-design-decisions.md` (LPN-DEC-001 v0.2): the six open decisions moved to Decisions made; Open decisions now reads none; tables renumbered
+- `docs/decisions/0003-design-for-construction.md` (LPN-DDR-003 v0.2): status accepted with Amish's words; A1 accepted on strict bench-only terms, A2 accepted; safety note updated
+- `docs/decisions/0001-trl2-review-decisions.md` (LPN-DDR-001 v0.3): O1 (first partner and region) decided
+- `docs/decisions/0002-recommendations-accepted.md` (LPN-DDR-002 v0.2): O1 decided; the FieldNode cross-repo action records the pinout LampNode proposes
+- `docs/03-requirements.md` (LPN-REQ-001 v0.6): R13 states the pinout proposed to FieldNode; no status changed
+- `docs/02-concept.md` (LPN-PRC-001 v0.6): expansion port pinout, first partner and band stated as decided
+- `docs/01-problem.md` (LPN-PRB-001 v0.5): first partner and port pinout stated as decided
+- `docs/05-build-plan.md` (LPN-BLD-001 v0.2): antenna band set to 915 MHz for the US partner; no design change
+- `bom/bom-notes.md`: 915 MHz antenna and US915 band, and the port pinout, noted; no quantity or price changed
+- PDFs regenerated with `python3 .kit/render.py`; superseded PDF versions removed by the render.
+
+### Follow-up actions to carry approved decisions into the design
+
+1. Decision 3 (pictures): Update `cad/src/product_model.py`, the photoreal renders, `media/card.png` and `media/social-preview.png` with the M12 socket on the dome pad (on Amish's Mac)
+2. Decision 6 (pictures): When the renders are next made, redraw appearance items 2, 3 and 4 (cable route, band clamps, folded bracket with EPDM strips) to the constructable design of P10 and P11; items 1, 5 and 6 stay as render-only details
+3. Decision 4 (bom): Change the description of BOM line 8 from "868 or 915 MHz" to a 915 MHz antenna, and set the LoRaWAN module order for US915
+4. Decision 4 (calcs): Recheck the time on air and duty limits in LPN-CAL-001 for the US915 band (FCC dwell time of 400 ms per channel) instead of the EU868 duty cycle
+5. Decision 5 (drawings): Mark the port pinout (pin 1 supply, pin 3 ground, pins 2 and 4 RS-485, pin 5 wake) on the block-level wiring diagram (build plan Figure 8) and the head board making sketch
+6. Decision 5 (docs): Propose the pinout to FieldNode (its O2) in the FieldNode repo; it was not edited from here
+
+### Points found in the review
+
+- The render files referenced by the README are not present in this cloud copy, and the existing renders still show the M12 socket on the base, the solid bracket and the 16 mm window.

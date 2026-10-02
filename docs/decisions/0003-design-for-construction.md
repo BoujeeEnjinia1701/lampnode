@@ -3,9 +3,9 @@ doc_id: LPN-DDR-003
 title: LampNode design for construction
 project: LampNode
 doc_type: Design decision record
-version: "0.1"
+version: "0.2"
 status: Draft
-date: '2026-10-01'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -13,12 +13,16 @@ revisions:
   date: '2026-10-01'
   author: Amish Chadha
   change: Changes that make the concept physically buildable, with the reason for each; made under Amish's 2026-09-30 instruction to make the design physically buildable; open for his review
+- version: "0.2"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: 'Accepted by Amish on 2026-10-02, including the recommendations for A1, on strict bench-only terms, and A2'
 ---
 
 # 0003: Design for construction
 
 - **Date:** 2026-10-01
-- **Status:** Draft. Made under Amish's 2026-09-30 instruction to make the design physically buildable; open for his review. The items in Table 3 are Proposed, awaiting Amish.
+- **Status:** accepted. Amish, 2026-10-02: "i approve your recommendations for all 555 open decisions." This covers every change made under Amish's 2026-09-30 instruction to make the design physically buildable and the recommendations for A1 and A2 in Table 3, now decided as recommended and recorded in the design decisions register (LPN-DEC-001).
 
 ## Context
 
@@ -55,12 +59,12 @@ The changes keep what LampNode does: the same twist-lock base and socket, the sa
 | Drawing | LPN-DWG-001 Rev P3; making sketches LPN-DWG-101 to 108 added. | Follows the model |
 | Documents | LPN-PRC-001 v0.5 (component table, mass, cost), LPN-REQ-001 v0.5 (R16 against the value-engineering target). No requirement changed status: 0 not met, 4 at risk (R3, R6, R7, R11), 11 met on paper, by design review or under the value-engineering target, 1 not verifiable at TRL 3 (R1). | Follows the model |
 
-*Table 3. Proposed, awaiting Amish.*
+*Table 3. Proposed, then accepted by Amish as recommended on 2026-10-02.*
 
 | # | Question | Options | Recommendation |
 | --- | --- | --- | --- |
-| A1 | The first prototype's mains board is a hand-wired plated prototype board carrying parts at up to 305 V. That is acceptable on a bench behind an isolating transformer and an RCD, but not on a street. | (a) build the first prototype on hand-wired boards for bench work only, and lay out a printed circuit board (TRL 4) before any outdoor or luminaire-powered test; (b) lay out the mains board before building anything. | (a): it tests the mechanics, fixings and fail-on behaviour soonest, and the build plan's safety stops keep it off the street. |
-| A2 | The M12 socket moves from the base to the dome (P3), which changes the controller's look from the pole side. The photoreal renders and `cad/src/product_model.py` still show it on the base. | (a) accept, and update the appearance model and renders on Amish's Mac; (b) look for a bought base with a socket boss. | (a). |
+| A1 | The first prototype's mains board is a hand-wired plated prototype board carrying parts at up to 305 V. That is acceptable on a bench behind an isolating transformer and an RCD, but not on a street. | (a) build the first prototype on hand-wired boards for bench work only, and lay out a printed circuit board (TRL 4) before any outdoor or luminaire-powered test; (b) lay out the mains board before building anything. | (a): it tests the mechanics, fixings and fail-on behaviour soonest, and the build plan's safety stops keep it off the street. Accepted 2026-10-02 on strict terms: bench only; powered only through an isolating transformer and an RCD with the dome on; the 6 mm gap between mains and low voltage checked before first power; a laid-out board before any outdoor or luminaire-powered test. |
+| A2 | The M12 socket moves from the base to the dome (P3), which changes the controller's look from the pole side. The photoreal renders and `cad/src/product_model.py` still show it on the base. | (a) accept, and update the appearance model and renders on Amish's Mac; (b) look for a bought base with a socket boss. | (a). Accepted 2026-10-02. |
 
 ## Consequences
 
@@ -68,4 +72,4 @@ The changes keep what LampNode does: the same twist-lock base and socket, the sa
 - The photoreal renders (`media/render-*.png`), `media/card.png`, `media/social-preview.png` and the appearance model `cad/src/product_model.py` still show the concept: M12 socket on the base, solid bracket and the earlier window. They need updating on Amish's Mac, where Blender is.
 - The base kit, the head box, the M12 socket, the supply, relay and radar module are chosen at TRL 4; the sizes this record assumes for them are listed as items to confirm in LPN-DEC-001.
 
-> **Safety:** The controller carries mains voltage (up to 277 V AC nominal, 305 V maximum). None of the changes above alters the fail-on relay, the surge stage or the isolation between the mains and 12 V sides; the board layout keeps 6 mm of bare board between them. The hand-wired mains board of the first prototype is for bench work only (A1).
+> **Safety:** The controller carries mains voltage (up to 277 V AC nominal, 305 V maximum). None of the changes above alters the fail-on relay, the surge stage or the isolation between the mains and 12 V sides; the board layout keeps 6 mm of bare board between them. The hand-wired mains board of the first prototype is for bench work only (A1, accepted 2026-10-02): it is powered only through an isolating transformer and an RCD with the dome on, after the 6 mm gap has been checked, and a laid-out board is made before any outdoor or luminaire-powered test (build plan safety stops S2, S3 and S7).

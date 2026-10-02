@@ -8,3 +8,4 @@
 - The luminaire, its receptacle, the arm and the pole are existing street furniture and are not costed.
 - Installation labor (bucket truck, electrician, traffic management) is not included.
 - Metering is indicative, not revenue grade; each unit needs a one-point calibration against a bench power meter (R8).
+- Decisions of 2026-10-02 (LPN-DEC-001): the first partner is in the US, so line 8 is the 915 MHz antenna and the LoRaWAN module is set up for the US915 band. The expansion port leads (line 14) are to be wired to the pinout proposed to FieldNode: pin 1 supply, pin 3 ground, pins 2 and 4 RS-485, pin 5 wake. No quantity or price was changed.

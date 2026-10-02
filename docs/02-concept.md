@@ -3,9 +3,9 @@ doc_id: LPN-PRC-001
 title: LampNode design precis
 project: LampNode
 doc_type: Design precis
-version: "0.5"
+version: "0.6"
 status: Draft
-date: '2026-10-01'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -29,6 +29,10 @@ revisions:
   date: '2026-10-01'
   author: Amish Chadha
   change: Design made constructable (LPN-DDR-003); component descriptions, mass and cost updated; budget treated as a value-engineering target
+- version: "0.6"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: 'Decisions of 2026-10-02 (LPN-DEC-001): first partner and band, port pinout proposed to FieldNode'
 ---
 
 # LampNode design precis
@@ -71,7 +75,7 @@ Numbers match Figure 2 and `bom/bom.csv`.
 | 11 | Sensor head enclosure | IP66 box 120 x 90 x 60 mm clamped under the arm, 470 mm from the receptacle toward the pole |
 | 12 | 24 GHz radar presence sensor | Doppler module with I/Q output, tilted 25° below horizontal along the street; motion, speed and direction only |
 | 13 | Sensor head board | Small microcontroller that turns the radar signal into presence events, and switches power to the expansion ports |
-| 14 | Expansion ports (2) | Sealed 5-pole M12 sockets with the FieldNode sensor port pinout (pinout still open at FieldNode), 12 V SELV, 3 W total |
+| 14 | Expansion ports (2) | Sealed 5-pole M12 sockets with the pinout proposed to FieldNode (pin 1 supply, pin 3 ground, pins 2 and 4 RS-485, pin 5 wake), 12 V SELV, 3 W total |
 | 15 | Arm band clamps | Two stainless band clamps for 50 to 80 mm arms through slots in a folded aluminium bracket, with rubber strips where the arm rests; no drilling of the arm |
 | 17 | Controller boards and fixings | Round mains board on three spacers carrying items 3 to 6, standoffs to the controller board, screws, inserts and the dome gasket |
 | 18 | Head internal plate | Printed plate on the box bosses, carrying the head board and a 25° cradle for the radar |
@@ -147,8 +151,8 @@ The TRL 3 calculations added engineering changes, also decided by Amish on 2026-
 1. Radar false triggers from rain, wind-blown trees and passing traffic, and the real cross-section of a person seen from 7.7 m (R6). Needs a field trial.
 2. A normally closed relay with an 80 A or better inrush rating, and the partner's driver inrush data (R3).
 3. Surge level and test standard: ANSI C136.2 and the asset owner's specification (R11). The standard was not read in this session.
-4. R7 shortfall: the risk is accepted by Amish's decision (LPN-DDR-002); real traffic counts from a first partner would settle it. The first partner itself is still awaiting Amish (LPN-DDR-001 O1).
-5. Sensor port pinout, to be agreed with FieldNode and the adopting teams (FieldNode O2).
+4. R7 shortfall: the risk is accepted by Amish's decision (LPN-DDR-002); real traffic counts from a first partner would settle it. The first partner is to be a US partner on the 915 MHz band; the first candidate to approach is a university campus or municipal utility in the Dallas-Fort Worth area that runs LED streetlights with ANSI C136.41 sockets (decided 2026-10-02, LPN-DEC-001).
+5. Sensor port pinout: LampNode proposes to FieldNode pin 1 supply (12 V on LampNode), pin 3 ground, pins 2 and 4 a two-wire RS-485 pair, pin 5 a wake line; hosted sensors accept 5 to 12 V and regulate down themselves (decided 2026-10-02, LPN-DEC-001); FieldNode and the adopting teams still have to agree it (FieldNode O2).
 6. Whether neighboring lamps should also brighten ahead of a pedestrian, which needs a lamp-to-lamp message path.
 7. A DALI-2 D4i variant and a Zhaga Book 18 form, if a partner needs them.
 

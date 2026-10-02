@@ -3,9 +3,9 @@ doc_id: LPN-BLD-001
 title: LampNode prototype build plan
 project: LampNode
 doc_type: Build plan
-version: "0.1"
+version: "0.2"
 status: Draft
-date: '2026-10-01'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -13,6 +13,10 @@ revisions:
     date: '2026-10-01'
     author: Amish Chadha
     change: First build plan, with pictures by component and step; design made constructable (LPN-DDR-003)
+  - version: "0.2"
+    date: '2026-10-02'
+    author: Amish Chadha
+    change: 'Antenna band set to 915 MHz by the first-partner decision of 2026-10-02 (LPN-DEC-001); no design change'
 ---
 
 # LampNode prototype build plan
@@ -291,7 +295,7 @@ Buy to specification, not brand. Line numbers are those of the bill of materials
 
 - **Twist-lock base (line 1).** ANSI C136.41 7-contact photocontrol base kit with gasket, with solid material or bosses at the six screw points (check before drilling).
 - **Surge parts, supply, relay and metering (lines 3 to 6) and the controller parts (line 7).** As Table 2.
-- **Antenna (line 8).** Flexible sub-GHz antenna about 70 x 10 with an adhesive back and a u.FL lead, for the band of the first partner's region (868 or 915 MHz).
+- **Antenna (line 8).** Flexible sub-GHz antenna about 70 x 10 with an adhesive back and a u.FL lead, for the 915 MHz band of the first partner's region (a US partner, LPN-DEC-001).
 - **Light sensor and pipe (line 9).** Ambient light sensor breakout; 8 mm clear acrylic rod.
 - **M12 socket and cable (line 10).** 5-pole A-coded M12 panel socket with an M16 thread for walls up to 6 mm; 1 m UV-rated single-ended M12 cordset.
 - **Sensor head box (line 11).** As section 3.5, with one M16 nylon cable gland for 4 to 8 mm cable.

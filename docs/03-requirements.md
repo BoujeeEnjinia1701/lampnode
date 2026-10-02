@@ -3,9 +3,9 @@ doc_id: LPN-REQ-001
 title: LampNode requirements
 project: LampNode
 doc_type: Requirements
-version: "0.5"
+version: "0.6"
 status: Draft
-date: '2026-10-01'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -29,6 +29,10 @@ revisions:
   date: '2026-10-01'
   author: Amish Chadha
   change: R16 reported against the value-engineering target for the constructable design (LPN-DDR-003)
+- version: "0.6"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: 'R13 states the port pinout proposed to FieldNode on 2026-10-02 (LPN-DEC-001); no status changed'
 ---
 
 # LampNode requirements
@@ -53,7 +57,7 @@ Table 1. Requirements
 | R10 | Low self-consumption | 1.0 W or less average from the mains, sensor head included, expansion ports unloaded | Power budget | Met on paper: 0.68 W |
 | R11 | Survive the environment | IP66; operate from -30 to +70 °C; UV-stable housing; proposed surge target 10 kV / 5 kA combination wave, final level taken from ANSI C136.2 | Datasheets, thermal and surge calculations; tests at TRL 4 | **At risk:** 63 to 65 °C inside at 45 °C in sun; 118 J in the varistor at 5 kA; IP66 and surge need tests |
 | R12 | Fail safe | Lamp on at night if the controller, firmware or network fails; lamp on within 2 s of power-up at dusk without the network; open 0 to 10 V line gives full output | Circuit and firmware review | Met (design review): normally closed relay, toggling coil drive; driver open-line behavior to be confirmed |
-| R13 | Host other sensors | Two sealed 5-pole M12 expansion ports with the FieldNode sensor port pinout, 12 V SELV, 3 W total, limited by firmware to 2.5 W total when the controller interior is above 50 °C (LPN-DDR-002, O3), cable up to 10 m, whenever the luminaire feed is live. Hosted sensors that need power around the clock on cabinet-switched feeders bring their own storage, such as a FieldNode core (redefined, LPN-DDR-001 D7) | Power budget; design review | Met on paper with the firmware port limit: 3.40 W peak against 3.57 W at 64 °C (3.90 W against 3.55 W without it) |
+| R13 | Host other sensors | Two sealed 5-pole M12 expansion ports with the FieldNode sensor port pinout (as proposed to FieldNode on 2026-10-02, LPN-DEC-001: pin 1 supply, pin 3 ground, pins 2 and 4 a two-wire RS-485 pair, pin 5 a wake line; hosted sensors accept 5 to 12 V), 12 V SELV, 3 W total, limited by firmware to 2.5 W total when the controller interior is above 50 °C (LPN-DDR-002, O3), cable up to 10 m, whenever the luminaire feed is live. Hosted sensors that need power around the clock on cabinet-switched feeders bring their own storage, such as a FieldNode core (redefined, LPN-DDR-001 D7) | Power budget; design review | Met on paper with the firmware port limit: 3.40 W peak against 3.57 W at 64 °C (3.90 W against 3.55 W without it) |
 | R14 | Privacy | Presence only: no images, audio or personal identifiers are captured or leave the device; optional 15 min presence counts | Design review; open firmware | Met (design review) |
 | R15 | Secure and open | LoRaWAN 1.0.4 or later with AES-128 session keys; signed firmware; published payload format; works with any LoRaWAN network server. A TALQ bridge belongs to CityTwin, not to LampNode (redefined, LPN-DDR-001 D10) | Firmware sketch review | Met (design review): 25.7 s of airtime a day at SF9 |
 | R16 | Affordable | Controller and one sensor head $150 or less in parts at prototype quantities | Priced BOM (`bom/bom.csv`) | USD 143.00 for the constructable design, USD 7.00 under the USD 150 value-engineering target |

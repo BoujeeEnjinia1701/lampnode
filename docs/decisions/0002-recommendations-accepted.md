@@ -3,9 +3,9 @@ doc_id: LPN-DDR-002
 title: LampNode recommendations accepted
 project: LampNode
 doc_type: Design decision record
-version: "0.1"
+version: "0.2"
 status: Draft
-date: '2026-09-25'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -13,6 +13,10 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Record Amish's acceptance of all recommendations in LPN-DDR-001 and docs/REVIEW.md, what changed in the repo, and the items still open
+- version: "0.2"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: 'O1 (first partner) decided and the pinout to propose to FieldNode recorded, 2026-10-02'
 ---
 
 # 0002: Recommendations accepted
@@ -52,17 +56,17 @@ No recommendation changed the budget, the pitch or the problem, so `budget_usd` 
 
 ## Items still open
 
-*Table 2. Proposed, awaiting Amish.*
+*Table 2. Proposed, then decided by Amish on 2026-10-02.*
 
 | # | Item | Status |
 | --- | --- | --- |
-| O1 | First partner (city, utility or campus) and region for co-design | Proposed, awaiting Amish. No recommendation was made |
+| O1 | First partner (city, utility or campus) and region for co-design | No recommendation was made. Decided by Amish, 2026-10-02 (LPN-DEC-001): a US partner on the 915 MHz band; first candidate to approach: a university campus or municipal utility in the Dallas-Fort Worth area that runs LED streetlights with ANSI C136.41 sockets |
 
 ## Cross-repo actions
 
 These are recorded here and in `docs/REVIEW.md`; no other repo was edited.
 
-- **FieldNode:** agree the 5-pole M12 port pinout (FieldNode O2) and the supply voltage on the ports (FieldNode offers 3.3, 5 or 12 V at build; LampNode offers 12 V only).
+- **FieldNode:** agree the 5-pole M12 port pinout (FieldNode O2) and the supply voltage on the ports (FieldNode offers 3.3, 5 or 12 V at build; LampNode offers 12 V only). Decided 2026-10-02 (LPN-DEC-001): LampNode proposes to FieldNode pin 1 supply (12 V on LampNode), pin 3 ground, pins 2 and 4 a two-wire RS-485 pair, pin 5 a wake line; hosted sensors accept 5 to 12 V and regulate down themselves.
 - **AirStreet and NoiseMap:** mention LampNode 12 V ports as an optional power source, keeping FieldNode solar as the default (D7).
 - **CityTwin:** add a TALQ bridge to CityTwin scope (D10).
 

@@ -3,9 +3,9 @@ doc_id: LPN-DEC-001
 title: LampNode design decisions register
 project: LampNode
 doc_type: Design decisions register
-version: "0.1"
+version: "0.2"
 status: Draft
-date: '2026-10-01'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -13,6 +13,10 @@ revisions:
     date: '2026-10-01'
     author: Amish Chadha
     change: Register opened with the open decisions, items to confirm, value engineering and decisions made; budget treated as a value-engineering target
+  - version: "0.2"
+    date: '2026-10-02'
+    author: Amish Chadha
+    change: 'Amish approved the recommendations for all six open decisions on 2026-10-02 (LPN-DDR-003 accepted); moved to decisions made; tables renumbered'
 ---
 
 # LampNode design decisions register
@@ -21,20 +25,11 @@ Every design decision still to be made, and every decision made, in one place. E
 
 ## Open decisions
 
-*Table 1. Open decisions, Proposed, awaiting Amish.*
-
-| # | Decision needed | Options | Recommendation | Affects in the build | Source |
-| --- | --- | --- | --- | --- | --- |
-| 1 | Accept the design-for-construction changes P1 to P11 | Accept as made; or ask for changes item by item | Accept | Every component of the build plan | LPN-DDR-003 |
-| 2 | Mains board of the first prototype | (a) hand-wired prototype board, bench work only, laid-out board before any outdoor or luminaire-powered test; (b) lay out the board first | (a) | Mains board (build plan section 3.2) and safety stops | LPN-DDR-003, A1 |
-| 3 | M12 socket on the dome pad instead of the base, and the renders that still show it on the base | (a) accept and update the appearance model and renders on Amish's Mac; (b) look for a bought base with a socket boss | (a) | Dome and M12 socket; photoreal renders | LPN-DDR-003, A2 |
-| 4 | First co-design partner (city, utility or campus) and region | Any partner Amish chooses | None made | Not part of the TRL 3 build; sets the radio band (868 or 915 MHz antenna and module) and the driver models to test | LPN-DDR-001, O1 |
-| 5 | Sensor port pinout of the two expansion ports | Pinout agreed with FieldNode and the adopting teams | None yet | Port lead wiring on the head board | LPN-DDR-002 cross-repo actions; FieldNode O2 |
-| 6 | Appearance-model differences recorded for the product renders (compact luminaire head, cable route, split band clamps, folded bracket, added details) | Accept for the renders; or redraw | Accept; items 3 and 4 now match the constructable design | Renders only | `docs/REVIEW.md`, session 2026-09-26 |
+None. All open decisions were decided on 2026-10-02.
 
 ## To confirm when parts are bought
 
-*Table 2. Assumed sizes and ratings to check against the real parts.*
+*Table 1. Assumed sizes and ratings to check against the real parts.*
 
 | # | What to confirm | Why it matters | Source |
 | --- | --- | --- | --- |
@@ -57,12 +52,18 @@ Value-engineering target: USD 150 (a hypothetical control target, not a limit). 
 
 ## Decisions made
 
-*Table 3. Decisions made, with Amish's words where recorded.*
+*Table 2. Decisions made, with Amish's words where recorded.*
 
 | Date | Decision | Decided by | Record |
 | --- | --- | --- | --- |
 | 2026-09-25 | TRL 2 review items D1 to D10: ANSI C136.41 socket first, 24 GHz Doppler radar, cable to a head under the arm, LoRaWAN on the STM32WL-class module, 0 to 10 V dimming, fail-on normally closed relay, sibling sensors on FieldNode solar, photocell-equivalent default, 120 to 277 V, TALQ bridge in CityTwin | Amish: "i accept all your recommendations, go with them across all repos." | LPN-DDR-001, LPN-DDR-002 |
 | 2026-09-25 | R7 kept at 35 % with the reference profile and its risk accepted (O2); firmware port limit of 2.5 W above 50 °C inside (O3) | Amish, same instruction | LPN-DDR-002 |
 | 2026-09-25 | Engineering changes O4 to O8: TCXO clock, 80 A inrush relay with zero-cross closing, 385 V surge stage without a gas discharge tube, charge-pump coil drive and two-signal day logic, I/Q radar, 5-pole M12 ports | Amish, same instruction | LPN-DDR-002 |
-| 2026-09-30 | Make the design physically buildable while drawing the build plan | Amish: "If you are realising that the design cannot be built as per concept - fix the design assumptions to match and be physically feasible as you draw the illustrations." | LPN-DDR-003 (Draft, open for his review) |
+| 2026-09-30 | Make the design physically buildable while drawing the build plan | Amish: "If you are realising that the design cannot be built as per concept - fix the design assumptions to match and be physically feasible as you draw the illustrations." | LPN-DDR-003 (accepted on 2026-10-02, below) |
 | 2026-10-01 | `budget_usd` is a value-engineering target, not a limit | Amish: "the budgets are a hypothethical control target to ensure we are thinking along a value engineering lens. its ok to ensure wording reflects that the hypothesis budget was x - the real cost being accrued is y" | This register; LPN-CAL-001 v0.3 |
+| 2026-10-02 | Design for construction accepted: the changes P1 to P11 and their knock-on changes, as made | Amish: "i approve your recommendations for all 555 open decisions." | LPN-DDR-003 |
+| 2026-10-02 | Mains board of the first prototype: hand-wired boards (option a) on strict terms: bench only, powered only through an isolating transformer and an RCD with the dome on, the 6 mm gap between mains and low voltage checked before first power, and a laid-out board before any outdoor or luminaire-powered test | Amish: "i approve your recommendations for all 555 open decisions." | LPN-DDR-003, A1 |
+| 2026-10-02 | M12 socket on the dome pad accepted (option a); the appearance model and renders are to be updated on Amish's Mac | Amish: "i approve your recommendations for all 555 open decisions." | LPN-DDR-003, A2 |
+| 2026-10-02 | First co-design partner and region: a US partner on the 915 MHz band; first candidate to approach: a university campus or municipal utility in the Dallas-Fort Worth area that runs LED streetlights with ANSI C136.41 sockets | Amish: "i approve your recommendations for all 555 open decisions." | LPN-DDR-001, O1 |
+| 2026-10-02 | Sensor port pinout proposed to FieldNode: pin 1 supply (12 V on LampNode), pin 3 ground, pins 2 and 4 a two-wire RS-485 pair, pin 5 a wake line; hosted sensors accept 5 to 12 V and regulate down themselves | Amish: "i approve your recommendations for all 555 open decisions." | LPN-DDR-002 cross-repo actions; FieldNode O2 |
+| 2026-10-02 | Appearance model: items 1, 5 and 6 accepted for the renders only; items 2, 3 and 4 (cable route, band clamps, bracket) are to be redrawn to the constructable design of P10 and P11 when the renders are next made | Amish: "i approve your recommendations for all 555 open decisions." | `docs/REVIEW.md`, session 2026-09-26 |
