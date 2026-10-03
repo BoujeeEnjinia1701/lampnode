@@ -3,7 +3,7 @@ doc_id: LPN-BLD-001
 title: LampNode prototype build plan
 project: LampNode
 doc_type: Build plan
-version: "0.2"
+version: "0.3"
 status: Draft
 date: '2026-10-02'
 author: Amish Chadha
@@ -17,6 +17,10 @@ revisions:
     date: '2026-10-02'
     author: Amish Chadha
     change: 'Antenna band set to 915 MHz by the first-partner decision of 2026-10-02 (LPN-DEC-001); no design change'
+  - version: "0.3"
+    date: '2026-10-02'
+    author: Amish Chadha
+    change: 'M12 pin numbers added to the wiring figure and the head board steps; picture revision note (general arrangement Rev P4); no design change'
 ---
 
 # LampNode prototype build plan
@@ -123,7 +127,9 @@ The board sits on three nylon spacers 12 tall, its underside 12 above the base. 
 
 ![Figure 8. Block-level wiring](05-build-plan/wiring.png)
 
-*Figure 8. Block-level wiring with wire sizes. No circuit board is laid out at this stage; bought modules on prototype board stand in for it.*
+*Figure 8. Block-level wiring with wire sizes, and the M12 pin numbers. No circuit board is laid out at this stage; bought modules on prototype board stand in for it.*
+
+**M12 pin numbers.** Every M12 socket and plug in the prototype uses the same five pins. Pin 1 carries the 12 V supply, pin 3 is ground, pins 2 and 4 are the two wires of the serial data pair (RS-485), and pin 5 is a wake wire. The cable between the controller and the head uses pins 1 to 4 and leaves pin 5 spare. The two expansion ports on the head use all five. Number the pins on the lead plugs with a marker as you wire them, and check each one with a meter before the dome goes on.
 
 The mains and controller circuits in the bill of materials will become laid-out boards at TRL 4. For this prototype, buy modules that meet this specification and wire them on the two round boards:
 
@@ -227,7 +233,7 @@ The socket sits between the two boards, 3 mm or more from every part on them. Th
 4. Lid: two 16.2 mm holes for the expansion ports, 30 toward the pole end from the middle and 20 each side of the centre line.
 5. Pilot drill every hole 3 mm at low speed with wood behind, open out with a step drill, light pressure, and deburr inside and out. Clean with water and mild soap only; solvents craze polycarbonate.
 6. Never drill, paint or label the street-side end wall.
-7. Fit the gland in the side wall and the two ports in the lid, each from outside with its seal, nut inside, to the maker's torque. Solder a 150 mm lead set to each port with a plug for the head board.
+7. Fit the gland in the side wall and the two ports in the lid, each from outside with its seal, nut inside, to the maker's torque. Solder a 150 mm lead set to each port with a plug for the head board, keeping to the M12 pin numbers under Figure 8 (pin 1 supply, pin 3 ground, pins 2 and 4 data, pin 5 wake).
 
 **How it fits the parts next to it.** The bracket screws onto the top face (Figure 20); the internal plate screws onto the bosses (Figure 17); the lid closes on its own gasket with its captive screws.
 
@@ -248,6 +254,7 @@ The socket sits between the two boards, 3 mm or more from every part on them. Th
 3. Fit four M3 standoffs 6 long under the plate for the head board.
 4. Fit the radar module to the cradle on two M2.5 screws with 3 mm nylon spacers, its face toward the street end.
 5. Fit the head board (65 x 56, prototype board with the microcontroller, regulator and port switch modules) on the standoffs with four M3 screws.
+6. Mark the port outputs on the board as they are wired: the two port plugs follow the M12 pin numbers under Figure 8 (pin 1 supply, pin 3 ground, pins 2 and 4 data, pin 5 wake).
 
 **How it fits the parts next to it.**
 
@@ -362,7 +369,7 @@ Four M4 x 12 pan-head screws down through the web and the box top, bonded sealin
 
 ![Step 9](05-build-plan/step-09.png)
 
-Pass the open end of the M12 cordset through the gland, connect it to the head board (12 V, 0 V and the two data wires) and tighten the gland. Plug in the port leads, add a fresh desiccant pack, check the lid gasket is clean with no wire across it, and tighten the lid screws evenly in a cross pattern.
+Pass the open end of the M12 cordset through the gland, connect it to the head board (pin 1 12 V, pin 3 0 V, pins 2 and 4 the two data wires) and tighten the gland. Plug in the port leads, add a fresh desiccant pack, check the lid gasket is clean with no wire across it, and tighten the lid screws evenly in a cross pattern.
 
 ### Step 10: sensor head onto the arm
 
@@ -422,7 +429,7 @@ Stop at each point. Carry on only when everything listed is true.
 
 - Model and constructability checks: `cad/src/model.py` (`python cad/src/model.py --check`, 80 checks); STEP and STL exports in `cad/step/` and `cad/stl/`.
 - Pictures: `cad/src/build_plan_media.py`, using `.kit/build_views.py`; written to `docs/05-build-plan/` and `cad/drawings/LPN-DWG-101` to `LPN-DWG-108`.
-- General arrangement: `cad/drawings/LPN-DWG-001.pdf`, Rev P3.
+- General arrangement: `cad/drawings/LPN-DWG-001.pdf`, Rev P4.
 - Calculations: `docs/04-calcs/01-sizing.md` (LPN-CAL-001 v0.3) and `docs/04-calcs/sizing.py`; mass in section 12, cost in section 13.
 - Bill of materials: `bom/bom.csv`.
 - Decisions: `docs/decisions/0003-design-for-construction.md` (LPN-DDR-003), with LPN-DDR-001 and LPN-DDR-002.

@@ -325,4 +325,42 @@ Amish, 2026-10-02: "i approve your recommendations for all 555 open decisions." 
 
 ### Points found in the review
 
-- The render files referenced by the README are not present in this cloud copy, and the existing renders still show the M12 socket on the base, the solid bracket and the 16 mm window.
+- The render files referenced by the README are not present in this cloud copy. The appearance model and render scenes were updated later on 2026-10-02 (see "Approved follow-ups carried out" below); the photoreal renders themselves are still to be made on Amish's Mac.
+
+## Session 2026-10-02: approved follow-ups carried out
+
+Amish approved on 2026-10-02 that every follow-up action from the open-decision sign-off be carried out. trl stays 3; no build or test work was done. `budget_usd` is unchanged.
+
+### Follow-ups
+
+1. Done (decision 3, pictures): `cad/src/product_model.py` now shows the M12 socket in the flat pad on the pole side of the dome. The photoreal renders, `media/card.png` and `media/social-preview.png` are not regenerated here: they are made on Amish's Mac next from the exported scenes.
+2. Done (decision 6, pictures): the appearance model redraws the cable route (P11), the folded bracket with band slots and rubber strips, and the band clamps through the slots (P10), using the model shapes. Items 1, 5 and 6 of the 2026-09-26 differences stay as render-only details.
+3. Done (decision 4, BOM): `bom/bom.csv` line 8 is a 915 MHz antenna and line 7 is ordered for US915; prices unchanged, with the basis given in the notes.
+4. Done (decision 4, calculations): LPN-CAL-001 section 9 and `sizing.py` now check the US915 400 ms dwell limit. Result: the 24-byte status message is inside the limit at SF9 (267 ms) or faster and over it at SF10 (494 ms, 94 ms over). The largest payload inside 400 ms is 11 bytes at SF10, 53 at SF9, 125 at SF8 and 242 at SF7. The 6-byte fault message is 330 ms at SF10. The last-gasp energy is unchanged. No requirement status changed.
+5. Done (decision 5, drawings): the pin numbers are on the wiring figure (build plan Figure 8, with a pinout panel), in the notes of the lid sketch LPN-DWG-106 (Rev P2) and the head internal plate sketch LPN-DWG-107 (Rev P2), and in the general arrangement notes.
+6. Not done here, cross-repo: propose the pinout to FieldNode (see Cross-repo actions).
+
+### Results
+
+- The model needed no change: it already carries the dome-pad socket, the folded bracket and the cable route; all 80 constructability checks still pass. STEP and STL regenerated.
+- Cost: Value-engineering target: USD 150. Estimated cost of the constructable design: USD 143.00 (USD 7.00 under the target). Mass unchanged: controller 0.33 kg, head 0.42 kg.
+- Requirement status changes: none (0 not met, 4 at risk: R3, R6, R7, R11; 11 met on paper; R1 not verifiable at TRL 3).
+- Pictures regenerated: general arrangement LPN-DWG-001 (Rev P4), concept media (hero, exploded, cutaway, flow, concept blueprint, model.glb), wiring figure, and sketches LPN-DWG-106 and 107.
+- Appearance model: 64 parts. Render scenes exported to `/home/claude/renders/lampnode` for the views hero, exploded and detail, with `lampnode__jobs.json`.
+
+### Documents changed
+
+- `docs/04-calcs/01-sizing.md` (LPN-CAL-001 v0.4), `docs/03-requirements.md` (LPN-REQ-001 v0.7), `docs/02-concept.md` (LPN-PRC-001 v0.7), `docs/05-build-plan.md` (LPN-BLD-001 v0.3), `bom/bom.csv`, `bom/bom-notes.md`, `docs/04-calcs/sizing.py`, `docs/04-calcs/results.csv`, `cad/src/sheets.py`, `cad/src/build_plan_media.py`, `cad/src/product_model.py`.
+
+### Cross-repo actions
+
+- FieldNode: publish the sensor port pinout (pin 1 supply, pin 3 ground, pins 2 and 4 RS-485, pin 5 wake; hosted sensors accept 5 to 12 V) as its O2 decision. FieldNode was not edited from here.
+- Any repo that cites a LoRaWAN band or duty cycle for a US partner should use the US915 400 ms dwell limit; LampNode's status message needs SF9 or faster.
+
+### Recommended next step
+
+Render the three views on Amish's Mac, then run the card script.
+
+## 2026-10-02: photoreal renders redone on the constructable design
+
+Rendered with Blender Cycles on Amish's Mac from the updated appearance model; captioned with `.kit/photo_caption.py`; `media/card.png` and `media/social-preview.png` regenerated with `.kit/cards.py`. Views: hero, exploded, detail. image_qc passes. Appearance deviations are those logged above as proposed, awaiting Amish.

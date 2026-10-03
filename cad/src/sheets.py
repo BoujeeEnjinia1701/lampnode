@@ -1,4 +1,4 @@
-"""LampNode general arrangement drawing LPN-DWG-001 (Rev P3).
+"""LampNode general arrangement drawing LPN-DWG-001 (Rev P4).
 
 Run from the repo root:  python cad/src/sheets.py
 Builds cad/drawings/LPN-DWG-001.svg, .pdf and .png from the parametric model.
@@ -23,11 +23,12 @@ hx_, hy_, hz_ = envelope(asm["lampnode-sensor-head"])
 hx, htop, hzc = head_frame(P)
 
 s = Sheet(project="LampNode", title="General arrangement, controller and sensor head", dwg_no="LPN-DWG-001",
-          rev="P3", author="Amish Chadha", date="2026-09-30", concept=True,
+          rev="P4", author="Amish Chadha", date="2026-10-02", concept=True,
           material="Dome ASA; base and head box PC; clamps stainless; bracket 2 mm Al. See bom/bom.csv",
           revisions=[("P1", "Preliminary GA from cad/src/model.py (LPN-CAL-001)", "2026-09-25", "AC"),
                      ("P2", "Port power note: 2.5 W above 50 C inside (LPN-DDR-002)", "2026-09-25", "AC"),
-                     ("P3", "Design for construction: fixings, boards, bracket (LPN-DDR-003)", "2026-09-30", "AC")])
+                     ("P3", "Design for construction: fixings, boards, bracket (LPN-DDR-003)", "2026-09-30", "AC"),
+                     ("P4", "Decisions of 2026-10-02: 915 MHz radio band and the M12 port pinout added to the notes", "2026-10-02", "AC")])
 s.add_ortho(views, ["front", "top", "right"])
 s.add_svg(views["iso"], 276, 30, 140, 84, label="Isometric view", sublabel="Not to scale; grey = existing receptacle and arm")
 s.add_notes("Key dimensions and interfaces (mm)", [
@@ -41,9 +42,9 @@ s.add_notes("Key dimensions and interfaces (mm)", [
     f"Band clamps for 50 to 80 arms, pitch {P['clamp_pitch']:.0f}, through",
     "  slots in a folded 2 mm bracket; arm rests on rubber strips",
     "Dome and board stack: 6 x M3 from under the base",
-    "Mains 120 to 277 V AC; 0 to 10 V dimming",
+    "Mains 120 to 277 V AC; 0 to 10 V dimming; relay normally closed",
     "Ports 12 V SELV, 3 W total; 2.5 W above 50 C inside",
-    "Relay normally closed: lamp on if the controller fails",
+    "US915 radio; port pins 1 12 V, 3 gnd, 2 and 4 RS-485, 5 wake",
     "Mass: controller 0.33 kg, head 0.42 kg (LPN-CAL-001)",
     "PRELIMINARY, NOT FOR FABRICATION",
 ], x=276, y=128, width=140)

@@ -318,14 +318,20 @@ def radio():
     section("8. Radio airtime, fault reporting and last gasp (R9, R15)")
     per = 96
     res = {}
-    for sf in (7, 9, 10, 12):
+    for sf in (7, 8, 9, 10):
         t = toa(24, sf)
         res[sf] = t
         out(f"24-byte status at SF{sf}: time on air", t * 1000, "ms", "{:.0f}")
         out(f"  96 per day at SF{sf}", t * per, "s/day", "{:.1f}")
-    out("EU868 1 % duty cycle: off time after one SF9 status", 99 * res[9], "s", "{:.0f}")
+    # US915 (decided 2026-10-02): no duty cycle, but a 400 ms dwell limit per channel (FCC 15.247)
+    DWELL = 0.400
+    for sf, dr in ((10, "DR0"), (9, "DR1"), (8, "DR2"), (7, "DR3")):
+        n = max(b for b in range(1, 243) if toa(b, sf) <= DWELL) if toa(1, sf) <= DWELL else 0
+        out(f"US915 {dr} (SF{sf}, 125 kHz): largest payload inside the 400 ms dwell limit", n, "bytes", "{:.0f}")
+    out("US915 SF9 or faster needed for the 24-byte status (SF10 time on air over 400 ms)", res[10] * 1000 - DWELL * 1000, "ms over", "{:.0f}")
     t_fault = toa(6, 9)
     out("6-byte fault message at SF9", t_fault * 1000, "ms", "{:.0f}")
+    out("6-byte fault message at SF10 (DR0)", toa(6, 10) * 1000, "ms", "{:.0f}")
     # last gasp energy: 22 dBm transmit 120 mA, MCU 5 mA, two receive windows 0.3 s at 6 mA, margin x3
     e_msg = 3.3 * (0.120 * toa(6, 10) + 0.005 * 0.1 + 0.006 * 0.6)
     out("last-gasp energy at SF10, 22 dBm", e_msg, "J", "{:.3f}")
@@ -334,8 +340,8 @@ def radio():
     out("0.22 F supercapacitor, 5.0 to 3.6 V, usable", e_cap, "J", "{:.2f}")
     out("last-gasp margin", e_cap / e_msg, "x", "{:.0f}")
     out("supercapacitor charge time at 20 mA", C * 5.0 / 0.020, "s", "{:.0f}")
-    return dict(toa9=res[9], toa10=res[10], toa12=res[12], day9=res[9] * per, day10=res[10] * per,
-                day12=res[12] * per, e_msg=e_msg, e_cap=e_cap)
+    return dict(toa9=res[9], toa10=res[10], toa8=res[8], day9=res[9] * per, day10=res[10] * per,
+                day8=res[8] * per, toa_f10=toa(6, 10), e_msg=e_msg, e_cap=e_cap)
 
 
 # ---------------------------------------------------------------- 9. surge
@@ -508,7 +514,7 @@ def main():
         ("R12", "Fail safe", "NC relay, open 0 to 10 V = full, coil needs a toggling drive, day decision needs clock AND light sensor", "Met (design review)"),
         ("R13", "Host other sensors", f"{hs['dv']:.2f} V drop at 10 m; ports limited to {PORT_W_HOT:.1f} W above {T_PORT_LIMIT:.0f} C inside (DDR-002): {th['peak_lim']:.2f} W peak against {th['cap_lim']:.2f} W at {th['T_lim']:.0f} C ({pb['peak']:.2f} W against {th['cap']:.2f} W without the limit)", "Met on paper (firmware port limit)"),
         ("R14", "Privacy", "Doppler radar, no image; presence counts only", "Met (design review)"),
-        ("R15", "Secure and open", f"LoRaWAN 1.0.4, open payload; {ra['day9']:.1f} s/day at SF9; TALQ in CityTwin (DDR item 10)", "Met (design review)"),
+        ("R15", "Secure and open", f"LoRaWAN 1.0.4, US915, open payload; {ra['day9']:.1f} s/day at SF9, inside the 400 ms dwell limit; TALQ in CityTwin (DDR item 10)", "Met (design review)"),
         ("R16", "Affordable", f"USD {co['tot']:.2f} against the USD {co['budget']} value-engineering target", f"Under the target by USD {co['budget'] - co['tot']:.2f}" if co['tot'] <= co['budget'] else f"Over the target by USD {co['tot'] - co['budget']:.2f}"),
     ]
     section("Results table")

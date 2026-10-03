@@ -3,7 +3,7 @@ doc_id: LPN-PRC-001
 title: LampNode design precis
 project: LampNode
 doc_type: Design precis
-version: "0.6"
+version: "0.7"
 status: Draft
 date: '2026-10-02'
 author: Amish Chadha
@@ -33,6 +33,10 @@ revisions:
   date: '2026-10-02'
   author: Amish Chadha
   change: 'Decisions of 2026-10-02 (LPN-DEC-001): first partner and band, port pinout proposed to FieldNode'
+- version: "0.7"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: 'US915 airtime limit (400 ms dwell) added to the key figures; figures and pictures regenerated; no requirement status changed'
 ---
 
 # LampNode design precis
@@ -43,7 +47,7 @@ LampNode is a twist-lock controller that replaces the photocell on top of an LED
 
 The TRL 3 calculations (LPN-CAL-001) put the energy of a 100 W luminaire at 40° N at about 432 kWh a year under a photocell and about 275 to 285 kWh with the reference presence profile, a saving of **34.1 to 36.4 %** against the 35 % target of R7. The TRL 2 estimate of about 41 % assumed nights that were too uniform. The controller draws 0.68 W on average, and the parts are estimated at USD 143.00 against a USD 150 value-engineering target (USD 7.00 under it). Four requirements are at risk on paper (R3, R6, R7, R11); none is clearly not met. R13 is met on paper once the firmware limits the hosted ports to 2.5 W above 50 °C inside. The design choices below were decided by Amish on 2026-09-25 (LPN-DDR-001, LPN-DDR-002).
 
-Figure 1 (`media/hero.png`) shows LampNode on a 7.8 m street pole with a 1.75 m person for scale; Figure 2 (`media/exploded.png`) numbers the parts to match `bom/bom.csv`; Figure 3 (`media/cutaway.png`) shows the inside of the controller; Figure 4 (`media/flow.png`) shows the annual energy; Figure 5 (`cad/drawings/LPN-DWG-001.pdf`) is the general arrangement at Rev P3, generated from `cad/src/model.py`. The design was made constructable on 2026-09-30 (LPN-DDR-003); how each part is made and fitted is in the prototype build plan, LPN-BLD-001 (`docs/05-build-plan.md`).
+Figure 1 (`media/hero.png`) shows LampNode on a 7.8 m street pole with a 1.75 m person for scale; Figure 2 (`media/exploded.png`) numbers the parts to match `bom/bom.csv`; Figure 3 (`media/cutaway.png`) shows the inside of the controller; Figure 4 (`media/flow.png`) shows the annual energy; Figure 5 (`cad/drawings/LPN-DWG-001.pdf`) is the general arrangement at Rev P4, generated from `cad/src/model.py`. The design was made constructable on 2026-09-30 (LPN-DDR-003); how each part is made and fitted is in the prototype build plan, LPN-BLD-001 (`docs/05-build-plan.md`).
 
 ## How it works
 
@@ -107,7 +111,7 @@ The saving depends mostly on traffic. With the dimmed driver model it is 40.4 % 
 | Clock drift without the network, 30 days | 9.1 s with the TCXO clock (160 s at -10 °C with a plain crystal) | R5 met on paper |
 | Radar | Beam covers 7.5 to 47.9 m for a walking person; 36 dB signal to noise at 15 m; 0.63 s to full | R6 at risk |
 | Metering error | 1.65 % worst case with a one-point calibration | R8 met on paper |
-| Status airtime | 267 ms per message, 25.7 s a day at SF9 | R15 |
+| Status airtime | 267 ms per message, 25.7 s a day at SF9 (US915: inside the 400 ms dwell limit; SF9 or faster) | R15 |
 | Interior temperature at 45 °C in sun | 63 to 65 °C | R11 at risk |
 | Varistor energy at 5 kA | 118 J | R11 |
 | Mass | Controller 0.33 kg; head with clamps and cable 0.42 kg | |

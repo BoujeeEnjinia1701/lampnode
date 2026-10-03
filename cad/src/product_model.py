@@ -3,7 +3,7 @@
 Finished-product look for photoreal renders: the twist-lock controller with a charcoal base (grip
 grooves, orientation mark, tin-plated power blades, gold low-voltage pads and a rubber gasket), an
 M12 panel socket and plug, and a filleted UV-stable dome with a teal accent band, a printed label
-and a clear window over the light pipe. Inside: the surge carrier with its varistors and thermal
+and a clear light-pipe rod through its top. Inside: the surge stage with its varistor and thermal
 fuse, the encapsulated supply, the fail-on relay, the metering chip, and the controller board with
 its shielded radio module, 0 to 10 V dimming stage, supercapacitor and antenna. The sensor head
 has a filleted housing with a parting line, a dark radar-transparent front face, lid screws, a
@@ -15,8 +15,12 @@ APPEARANCE MODEL ONLY: no tolerances, no fabrication detail. CONCEPT, NOT FOR FA
 Every main dimension and interface comes from PARAMS, head_frame() and build_parts() in model.py,
 in the same local frame: origin at the center of the receptacle's top face, Z up, X along the arm
 away from the pole, Y across the arm. The luminaire head is the concept_media.py reference head
-(650 mm) shortened to a compact 500 mm body for the render, and the M12 cable leaves the socket
-straight through its plug before it drops to the arm. See docs/REVIEW.md, session 2026-09-26.
+(650 mm) shortened to a compact body for the render. Updated 2026-10-02 to the constructable design
+(LPN-DDR-003): M12 socket in the flat pad on the dome, dome gasket, bosses and inserts, the boards on
+spacers and standoffs, the varistor standing on the mains board, the flexible antenna on the dome wall,
+the 8 mm light pipe rod, the printed internal plate with the radar cradle, the folded bracket with
+band slots and rubber strips, the bands through the slots, and the model.py cable route.
+See docs/REVIEW.md, sessions 2026-09-26 and 2026-10-02.
 
 Groups: the controller is "shell" and "internal"; the sensor head, bracket, clamps, M12 plug and
 cable are "accessory", so the detail view shows the controller alone; the luminaire head, its
@@ -33,7 +37,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from build123d import (Axis, Box, Cylinder, Plane, Pos, RegularPolygon, Rot, Solid, Sphere, Vector,
                        extrude, fillet)
-from model import PARAMS, LV_ANGLES, build_parts, head_frame
+from model import PARAMS, LV_ANGLES, build_components, build_parts, derived, head_frame
 
 TITLE = "LampNode: open streetlight controller with a radar presence head"
 
@@ -47,8 +51,8 @@ RENDER_VIEWS = [
              "sensor head with the 24 GHz radar, board, lid and expansion ports"},
     {"name": "detail", "groups": ["shell", "internal"], "explode": False, "el": 22, "az": -135,
      "note": "Detail of the controller from the front left, slightly above (about 22 deg elevation), without "
-             "the luminaire: dome with its clear light-sensor window, twist-lock base and the M12 socket "
-             "toward the pole"},
+             "the luminaire: dome with its clear light-pipe rod, twist-lock base and the M12 socket "
+             "in the flat pad on the pole side of the dome"},
 ]
 
 # Colours (restrained product palette; kit accent)
@@ -167,6 +171,8 @@ def _polar(r, ang_deg):
 
 def product_parts(P=PARAMS):
     ref = {n: s for n, s, _, bom, _ in build_parts(P) if bom is None}
+    MC = build_components(P)                              # model.py components, used as they are where they are plain
+    D = derived(P)
     out = []
 
     def add(name, shape, color, material, bom, group, explode):
@@ -186,12 +192,12 @@ def product_parts(P=PARAMS):
     grooves = []
     for k in range(32):
         ang = k * 360 / 32 + 5.625
-        if abs(((ang - 180) + 180) % 360 - 180) < 20:   # leave the M12 socket boss plain
-            continue
         x, y = _polar(R0, ang)
         grooves.append(Pos(x, y, 10.5) * Rot(0, 0, ang) * Box(2.4, 2.2, 13.0))
     base -= _union(grooves)
-    base -= _xcyl(-R0, 0, bh / 2, P["m12_d"] / 2 - 1.0, 8.0)      # socket bore
+    for ang in tuple(P["dome_boss_ang"]) + tuple(P["stack_ang"]):      # six M3 holes, countersunk from below, as model.py
+        hx_, hy_ = _polar(P["boss_r"], ang)
+        base -= _zcyl(hx_, hy_, bh / 2, 1.7, bh + 2) + _zcyl(hx_, hy_, 0.85, 3.0, 1.7)
     add("Twist-lock base body", base, C_BASE, "plastic", 1, "shell", (0, 0, 0))
 
     mark = Pos(0, -R0 - 0.15, 21.0) * Rot(90, 0, 0) * extrude(RegularPolygon(3.2, 3, rotation=90), amount=0.6)
@@ -213,32 +219,41 @@ def product_parts(P=PARAMS):
     gasket = _ring_z(0, 0, -g / 2, R0 - 12, R0 - 2, g)
     add("Base gasket", gasket, C_BLACK, "rubber", 1, "shell", (0, 0, -15))
 
-    # 10 M12 panel socket on the base (toward the pole) and the cable plug
-    ml = P["m12_l"]
-    sock = _hex_x(-R0 - 2.0, 0, bh / 2, 19.0, 4.0) + _xcyl(-R0 - 4 - (ml - 4) / 2, 0, bh / 2, P["m12_d"] / 2 - 0.5, ml - 4)
-    add("M12 panel socket", sock, C_METAL, "metal", 10, "shell", (0, 0, 0))
-    xs = -R0 - ml                                            # socket face, x = -63 as model.py
-    nut = _xcyl(xs - 5.0, 0, bh / 2, 9.5, 12.0)
+    # 10 M12 panel socket in the flat pad on the pole side of the dome (LPN-DDR-003 P3, accepted 2026-10-02),
+    #    the cable plug and the cable along the arm (P11)
+    ml, pw, pt, zm = P["m12_l"], P["pad"][0], P["pad"][1], P["m12_z"]
+    x_out = -(R0 + 0.5)                                       # pad face, as model.py
+    x_plug = x_out - 2 - ml                                   # socket face, where the plug starts
+    sock = _hex_x(x_out - 1.0, 0, zm, 22.0, 2.0) + _xcyl(x_out - 2 - ml / 2, 0, zm, P["m12_d"] / 2 - 0.5, ml)
+    sock += _hex_x(x_out + pt + 1.5, 0, zm, 20.0, 3.0) + _xcyl(x_out + pt + 5.5, 0, zm, 6.0, 5.0)    # nut and contact body inside
+    add("M12 panel socket", sock, C_METAL, "metal", 10, "shell", (-30, 0, 300))
+    nut = _xcyl(x_plug - 6.0, 0, zm, 10.0, 12.0)
     for k in range(18):
-        y, z = _polar(9.5, k * 20)
-        nut -= _xcyl(xs - 5.0, y, bh / 2 + z, 0.8, 13.0)
+        y, z = _polar(10.0, k * 20)
+        nut -= _xcyl(x_plug - 6.0, y, zm + z, 0.8, 13.0)
     add("M12 plug coupling nut (knurled)", nut, C_METAL, "metal", 10, "accessory", (-45, 0, 0))
-    mold = _xcyl(xs - 18.0, 0, bh / 2, 7.5, 14.0)
+    mold = _xcyl(x_plug - 26.0, 0, zm, 7.0, 28.0)
     mold = _fillet_try(mold, mold.edges().sort_by(Axis.X)[:1], [3.0, 2.0])
     add("M12 plug overmold", mold, C_BLACK, "rubber", 10, "accessory", (-45, 0, 0))
 
-    # cable: straight out of the plug, then the model.py route along the arm to the head gland
+    # cable: the model.py route (P11): level out of the plug, down to the top of the arm past the luminaire,
+    # along the arm, round to the +Y side and down to the head gland
     hx, htop, hzc = head_frame(P)
     hl, hw, hh = P["head"]
     ar, az = P["arm_d"] / 2, P["arm_z"]
     cr = P["cable_d"] / 2
-    zt = az + ar + cr + 1
-    yd = ar + cr + 6
-    xg = hx + 30
-    zc = bh / 2
-    route = [(xs - 25, 0, zc), (xs - 40, 0, zc), (-112, 0, -22), (-150, 0, zt), (hx + hl / 2 + 70, 0, zt),
-             (hx + hl / 2 + 50, 26, az + 25), (hx + hl / 2 + 30, yd, az - 10), (hx + hl / 2 + 30, yd, htop - 20), (hx + hl / 2 + 30, hw / 2 + 12, htop - 20),
-             (xg, hw / 2 + 12, htop - 20), (xg, hw / 2 + 9, htop - 20)]
+    zt = az + ar + cr + 0.5
+    yd = ar + cr + 5
+    yg = hw / 2
+    gl = 16.0
+    gz = htop - P["gland_z"]
+    xg = hx + P["gland_x"]
+    route = [(x_plug - 40, 0, zm), (-150, 0, zm), (-175, 0, zm - 25), (-175, 0, zt + 25), (-200, 0, zt),
+             (hx + hl / 2 + 60, 0, zt),
+             (hx + hl / 2 + 52, 37.5 * math.cos(math.radians(60)), az + 37.5 * math.sin(math.radians(60))),
+             (hx + hl / 2 + 46, 38.5 * math.cos(math.radians(30)), az + 38.5 * math.sin(math.radians(30))),
+             (hx + hl / 2 + 40, yd, az), (hx + hl / 2 + 40, yg + gl + 30, gz + 20),
+             (xg + 30, yg + gl + 30, gz), (xg, yg + gl + 20, gz), (xg, yg + gl, gz)]
     add("M12 cable to sensor head", _pipe(route, cr), C_BLACK, "rubber", 10, "accessory", (0, 0, 0))
     ties = []
     for x in (-230, -330):
@@ -246,14 +261,31 @@ def product_parts(P=PARAMS):
         ties.append(t)
     add("Cable ties", _union(ties), C_BLACK, "plastic", 16, "context", (0, 0, 0))   # shown with the arm
 
-    # 2 dome cover: filleted ASA dome with an accent band, label and clear window
-    zd = bh + dh / 2
-    outer = _zcyl(0, 0, zd, dr, dh)
+
+    # 2 dome cover (P2, P3, P4): foot on a 1 mm gasket, three screw bosses with heat-set inserts, the flat pad for
+    #   the M12 socket, the sleeve and 8.2 mm hole for the light pipe rod
+    d0, dtop = D["dome0"], D["dome_top"]
+    ddh = dtop - d0
+    zd = d0 + ddh / 2
+    gk = _ring_z(0, 0, bh + P["dome_gasket_t"] / 2, dr - dw, dr, P["dome_gasket_t"])
+    add("Dome gasket (EPDM)", gk, C_BLACK, "rubber", 17, "shell", (0, 0, 20))
+    outer = _zcyl(0, 0, zd, dr, ddh)
     outer = fillet(outer.edges().group_by(Axis.Z)[-1], P["dome_fillet"])
     outer = _fillet_try(outer, outer.edges().group_by(Axis.Z)[0], [1.0, 0.6])
-    inner = _zcyl(0, 0, zd - dw / 2 - 0.5, dr - dw, dh - dw + 1)
+    inner = _zcyl(0, 0, zd - dw / 2 - 0.5, dr - dw, ddh - dw + 1)
     inner = fillet(inner.edges().group_by(Axis.Z)[-1], P["dome_fillet"] - dw)
-    dome = outer - inner - _zcyl(0, 0, bh + dh - dw / 2, P["window_d"] / 2, dw * 2)
+    dome = outer - inner
+    dome += _bx(x_out, x_out + pt + 1.5, -pw / 2, pw / 2, zm - pw / 2, zm + pw / 2)           # flat pad
+    dome -= _bx(x_out + pt, x_out + pt + 8, -pw / 2, pw / 2, zm - pw / 2, zm + pw / 2)         # flat inner seat
+    dome -= _xcyl(x_out + (pt + 3) / 2 - 1, 0, zm, 8.1, pt + 3)                                # socket hole
+    sl = P["sleeve_l"]
+    dome += _zcyl(0, 0, dtop - dw - sl + (sl + 0.5) / 2, P["sleeve_od"] / 2, sl + 0.5)         # light pipe sleeve
+    for ang in P["dome_boss_ang"]:
+        bx_, by_ = _polar(P["boss_r"], ang)
+        boss = _zcyl(bx_, by_, d0 + P["boss_h"] / 2, P["boss_d"] / 2, P["boss_h"])
+        rib = Rot(0, 0, ang) * _bx(P["boss_r"], dr - dw + 0.5, -2, 2, d0, d0 + P["boss_h"])
+        dome += boss + rib
+    dome -= _zcyl(0, 0, dtop - dw - sl - 1 + (sl + dw + 3) / 2, P["window_d"] / 2, sl + dw + 3)   # rod hole
     add("Dome cover (UV-stable ASA)", dome, C_DOME, "plastic", 2, "shell", (0, 0, 300))
     band = _ring_z(0, 0, bh + 5.5, dr - 0.2, dr + 0.4, 3.0)
     add("Dome accent band", band, C_ACCENT, "painted", 2, "shell", (0, 0, 300))
@@ -264,74 +296,98 @@ def product_parts(P=PARAMS):
                   _box(0, -dr, bh + 24, 30, 20, 1.6), _box(-4, -dr, bh + 20, 22, 20, 1.6)])
     ink = _ring_z(0, 0, bh + 26, dr + 0.3, dr + 0.6, 20) & ink
     add("Dome label print", ink, C_BASE, "paper", 2, "shell", (0, 0, 300))
-    win = _zcyl(0, 0, bh + dh - dw / 2, P["window_d"] / 2, dw)
-    add("Light sensor window", win, C_WINDOW, "clear", 2, "shell", (0, 0, 300))
+    add("Heat-set inserts M3 (3)", MC["inserts"].shape, "#B8860B", "metal", 17, "internal", (0, 0, 300))
+    add("M3 countersunk screws (6)", MC["dome_screws"].shape + MC["stack_screws"].shape, C_STEEL, "metal", 17, "shell", (0, 0, -40))
 
-    # 3 surge stage: carrier disc, two varistor discs, thermal fuse
-    ES = (0, 0, 45)
-    carrier = _zcyl(0, 0, bh + 3, 40, 2)
-    add("Surge carrier board", carrier, C_PCB, "plastic", 3, "internal", ES)
-    movs = _union([_fillet_try(_zcyl(-5, s * 27, bh + 9, 7, 10), _top(_zcyl(-5, s * 27, bh + 9, 7, 10)), [2.0, 1.0])
-                   for s in (-1, 1)])
-    add("Surge varistors", movs, C_MOV, "plastic", 3, "internal", ES)
-    fuse = _zcyl(-20, 25, bh + 8, 4, 8)
-    fuse = _fillet_try(fuse, _top(fuse), [1.5, 1.0])
-    add("Thermal fuse", fuse, "#E7E5E4", "plastic", 3, "internal", ES)
+
+    # 17 board stack (P1): mains board on three 12 mm spacers, controller board on three 30 mm standoffs
+    mb0, mb1, cb0, cb1 = D["mb0"], D["mb1"], D["cb0"], D["cb1"]
+    rb = P["board_d"] / 2
+    B = [_polar(P["boss_r"], a) for a in P["stack_ang"]]
+    sp = _union([_zcyl(x, y, bh + P["spacer_h"] / 2, P["spacer_d"] / 2, P["spacer_h"]) for x, y in B])
+    add("Nylon spacers 12 mm (3)", sp, C_LABEL, "plastic", 17, "internal", (0, 0, 35))
+    ES = (0, 0, 70)
+    mboard = _zcyl(0, 0, (mb0 + mb1) / 2, rb, P["board_t"])
+    for ang in P["dome_boss_ang"]:
+        mboard -= Rot(0, 0, ang) * _bx(P["notch_r"], rb + 2, -P["notch_w"] / 2, P["notch_w"] / 2, mb0 - 1, mb1 + 1)
+    for x, y in B:
+        mboard -= _zcyl(x, y, mb0 + 1, 1.7, 4)
+    mboard -= _zcyl(P["lv_hole"][0], P["lv_hole"][1], mb0 + 1, 3.0, 4)
+    add("Mains board", mboard, C_PCB, "plastic", 17, "internal", ES)
+    so = _union([_hex_z(x, y, mb1 + P["standoff_h"] / 2, 5.5, P["standoff_h"]) for x, y in B])
+    add("Brass standoffs 30 mm (3)", so, "#B8860B", "metal", 17, "internal", (0, 0, 110))
+
+    # 3 surge stage: one standing 20 mm varistor and the thermal fuse against it (P6)
+    md, mt = P["mov_d"], P["mov_t"]
+    zmv = mb1 + 4 + md / 2
+    mov = _ycyl(0, 29.0, zmv, md / 2, mt)
+    mov = _fillet_try(mov, mov.edges().filter_by(Axis.Y), [1.5, 1.0])
+    mov += _bx(-3, 3, 27, 31, mb1, mb1 + 4)
+    add("Surge varistor", mov, C_MOV, "plastic", 3, "internal", (0, 55, 100))
+    fuse = _xcyl(0, 34.5, zmv - 3, 2.0, 10.0)
+    fuse = _fillet_try(fuse, fuse.edges(), [0.8, 0.4])
+    add("Thermal fuse", fuse, "#E7E5E4", "plastic", 3, "internal", (0, 55, 100))
 
     # 4 isolated supply, encapsulated, with a label
     px, py, pz = P["psu"]
-    psu = _bx(10 - px / 2, 10 + px / 2, -py / 2, py / 2, bh + 14, bh + 14 + pz)
+    psu = _bx(-2, -2 + px, -py / 2, py / 2, mb1, mb1 + pz)
     psu = _fillet_try(psu, _edges_par(psu, Axis.Z), [2.0, 1.0])
     psu = _fillet_try(psu, _top(psu), [1.0, 0.5])
-    add("Isolated power supply (12 V, 5 W)", psu, C_CHIP, "plastic", 4, "internal", (65, 0, 95))
-    plab = _bx(10 - 14, 10 + 14, -10, 10, bh + 14 + pz, bh + 14 + pz + 0.3)
-    add("Power supply label", plab, C_LABEL, "paper", 4, "internal", (65, 0, 95))
+    add("Isolated power supply (12 V, 5 W)", psu, C_CHIP, "plastic", 4, "internal", (50, 0, 100))
+    plab = _bx(-2 + 4, -2 + px - 4, -12, 12, mb1 + pz, mb1 + pz + 0.3)
+    add("Power supply label", plab, C_LABEL, "paper", 4, "internal", (50, 0, 100))
 
     # 5 fail-on relay
     rx, ry, rz = P["relay"]
-    relay = _bx(-26 - rx / 2, -26 + rx / 2, -ry / 2, ry / 2, bh + 5, bh + 5 + rz)
+    relay = _bx(-24, -24 + rx, -ry / 2, ry / 2, mb1, mb1 + rz)
     relay = _fillet_try(relay, relay.edges(), [1.2, 0.6])
-    add("Fail-on relay (normally closed)", relay, C_RELAY, "plastic", 5, "internal", (-75, 0, 85))
-    rlab = _bx(-26 - 6, -26 + 6, -ry / 2 - 0.3, -ry / 2, bh + 9, bh + 18)
-    add("Relay label", rlab, C_LABEL, "paper", 5, "internal", (-75, 0, 85))
+    add("Fail-on relay (normally closed)", relay, C_RELAY, "plastic", 5, "internal", (-60, 0, 100))
+    rlab = _bx(-24 + 3, -24 + rx - 3, -ry / 2 - 0.3, -ry / 2, mb1 + 4, mb1 + 14)
+    add("Relay label", rlab, C_LABEL, "paper", 5, "internal", (-60, 0, 100))
 
-    # 6 energy metering: small carrier, IC and shunt, within the model.py envelope
-    mcar = _bx(10, 18, 20, 32, bh + 4, bh + 5.6)
-    add("Metering carrier", mcar, C_PCB, "plastic", 6, "internal", (80, -60, 70))
-    mic = _bx(11, 17, 21.5, 30.5, bh + 5.6, bh + 7.2) + _bx(12, 16, 22, 30, bh + 7.2, bh + 12)
-    add("Metering IC and isolator", mic, C_CHIP, "plastic", 6, "internal", (80, -60, 70))
+    # 6 energy metering module: small carrier, IC and shunt
+    mcar = _bx(-9, 7, -36, -24, mb1, mb1 + 1.6)
+    add("Metering carrier", mcar, C_PCB, "plastic", 6, "internal", (45, -60, 100))
+    mic = _bx(-6, 0, -33, -27, mb1 + 1.6, mb1 + 3.2) + _bx(2, 6, -34, -26, mb1 + 1.6, mb1 + 4.5)
+    add("Metering IC and shunt", mic, C_CHIP, "plastic", 6, "internal", (45, -60, 100))
 
-    # 7 controller board: PCB, shielded radio module, dimming stage, supercapacitor
-    EB = (0, 0, 165)
-    pcb = _zcyl(0, 0, bz, P["board_d"] / 2, P["board_t"])
+    # 7 controller board on the standoffs: radio module, dimming stage, supercapacitor standing on top
+    EB = (0, 0, 160)
+    bzc = (cb0 + cb1) / 2
+    pcb = _zcyl(0, 0, bzc, rb, P["board_t"])
+    for x, y in B:
+        pcb -= _zcyl(x, y, bzc, 1.7, 4)
     add("Controller board PCB", pcb, C_PCB, "plastic", 7, "internal", EB)
-    z1 = bz + P["board_t"] / 2
-    radio = _bx(7, 25, -3, 15, z1, z1 + 1.2)
+    radio = _bx(8, 24, -2, 14, cb1, cb1 + 1.2)
     add("LoRaWAN radio module", radio, C_PCB, "plastic", 7, "internal", EB)
-    can = _bx(8, 24, -2, 14, z1 + 1.2, z1 + 4.0)
+    can = _bx(9, 23, -1, 13, cb1 + 1.2, cb1 + 4.0)
     can = _fillet_try(can, _top(can), [0.6, 0.3])
     add("Radio shield can", can, C_METAL, "metal", 7, "internal", EB)
-    dim = _union([_bx(-30, -20, -14, -6, z1, z1 + 1.8), _bx(-16, -8, -24, -16, z1, z1 + 1.4),
-                   _bx(-4, 4, -30, -24, z1, z1 + 1.2), _bx(-30, -24, 2, 8, z1, z1 + 1.2),
-                   _bx(12, 20, 20, 28, z1, z1 + 1.4)])
+    dim = _union([_bx(-30, -22, -24, -16, cb1, cb1 + 1.8), _bx(-16, -8, -24, -16, cb1, cb1 + 1.4),
+                  _bx(-4, 4, -30, -24, cb1, cb1 + 1.2), _bx(-30, -24, 2, 8, cb1, cb1 + 1.2),
+                  _bx(12, 20, 20, 28, cb1, cb1 + 1.4)])
     add("Dimming stage and clock ICs", dim, C_CHIP, "plastic", 7, "internal", EB)
-    sc_z = bz - P["supercap_h"] / 2 - 0.8
-    sc = _zcyl(22, -24, sc_z, P["supercap_d"] / 2, P["supercap_h"])
-    sc = _fillet_try(sc, _bottom(sc), [1.5, 1.0])
+    sc = _zcyl(-24, -6, cb1 + P["supercap_h"] / 2, P["supercap_d"] / 2, P["supercap_h"])
+    sc = _fillet_try(sc, _top(sc), [1.5, 1.0])
     add("Supercapacitor (0.22 F)", sc, C_CHIP, "plastic", 7, "internal", EB)
-    sleeve = _ring_z(22, -24, sc_z - 4, P["supercap_d"] / 2 - 0.1, P["supercap_d"] / 2 + 0.2, 6)
+    sleeve = _ring_z(-24, -6, cb1 + 4, P["supercap_d"] / 2 - 0.1, P["supercap_d"] / 2 + 0.2, 6)
     add("Supercapacitor sleeve band", sleeve, C_ACCENT, "plastic", 7, "internal", EB)
-
-    # 8 antenna, 9 light sensor and pipe
-    ah = P["antenna_h"]
-    ant = _zcyl(-18, 14, z1 + ah / 2, 3, ah)
-    ant = _fillet_try(ant, _top(ant), [2.0, 1.2])
-    add("Antenna", ant, C_BLACK, "plastic", 8, "internal", (0, 0, 195))
-    lp = top_in - z1
-    pipe = _zcyl(0, 0, z1 + lp / 2, 4, lp) + _zcyl(0, 0, top_in - 2, 6, 4)
-    add("Light pipe", pipe, C_PIPE, "plastic", 9, "internal", (0, 0, 215))
-    sens = _bx(-2.5, 2.5, 5, 10, z1, z1 + 1.0)
+    sens = _bx(-1.5, 1.5, -1.5, 1.5, cb1, cb1 + 1.0)
     add("Ambient light sensor", sens, C_CHIP, "plastic", 9, "internal", EB)
+
+    # 8 antenna: flexible strip stuck inside the dome wall on the -Y side (P5)
+    al, ah, at = P["antenna"]
+    ri = dr - dw
+    span = math.degrees(al / ri)
+    za = P["antenna_z"]
+    ant = _ring_z(0, 0, za + ah / 2, ri - at, ri, ah) & \
+        (Rot(0, 0, -90) * _bx(0, ri + 5, -ri * math.sin(math.radians(span / 2)), ri * math.sin(math.radians(span / 2)), za - 1, za + ah + 1))
+    add("Antenna (flexible strip, 915 MHz)", ant, C_BLACK, "plastic", 8, "internal", (0, 0, 300))
+
+    # 9 light pipe: clear 8 mm rod through the dome top, 0.5 mm above the light sensor (P4)
+    z0p = cb1 + 1.5
+    rod = _zcyl(0, 0, (z0p + dtop) / 2, P["pipe_d"] / 2, dtop - z0p)
+    add("Light pipe rod (clear acrylic)", rod, C_WINDOW, "clear", 9, "shell", (0, 0, 300))
 
     # ============================================================ sensor head (BOM 11 to 15)
     t = P["head_wall"]
@@ -384,21 +440,30 @@ def product_parts(P=PARAMS):
     cap = _fillet_try(cap, cap.faces().sort_by(Axis.Y)[-1].edges(), [2.0, 1.2])
     add("Head cable gland", gland + cap, C_BLACK, "plastic", 11, "accessory", (0, 40, -40))
 
-    # 12 radar module, tilted down the street, with its patch antennas facing +X
+    # 12 radar module on the plate's cradle, tilted down the street, patch antennas facing +X (model.py position)
     rx_, ry_, rz_ = P["radar"]
-    rloc = Pos(x1 - t - 15, 0, hzc) * Rot(0, P["radar_tilt"], 0)
+    rloc = Pos(hx + P["radar_dx"], 0, D["radar_zc"]) * Rot(0, P["radar_tilt"], 0)
     add("24 GHz radar module", rloc * Box(rx_, ry_, rz_), C_PCB, "plastic", 12, "accessory", (60, 0, -95))
     patches = _union([Pos(rx_ / 2 + 0.2, py_, pz_) * Box(0.4, 7, 7) for py_ in (-15, -5, 5, 15) for pz_ in (-9, 9)])
     add("Radar patch antennas", rloc * patches, C_GOLD, "metal", 12, "accessory", (60, 0, -95))
     rchip = Pos(-rx_ / 2 - 0.8, 0, 0) * Box(1.6, 14, 10)
     add("Radar front-end IC", rloc * rchip, C_CHIP, "plastic", 12, "accessory", (60, 0, -95))
 
-    # 13 head board
-    hb0 = zb + t + 10
-    hboard = _bx(hx - 45, hx + 25, -35, 35, hb0, hb0 + 1.6)
+    # 18 printed internal plate with the radar cradle, on the four box bosses (P8): model.py shape
+    add("Head internal plate with radar cradle", MC["hplate"].shape, "#9AA1A9", "plastic", 18, "accessory", (0, 0, -75))
+
+    # 13 head board under the plate on four 6 mm standoffs (P8); parts on its underside
+    hbl, hbw = P["hboard"]
+    hb_top = D["pl_bot"] - P["hboard_standoff"]
+    x0b = hx + P["hboard_x0"]
+    hboard = _bx(x0b, x0b + hbl, -hbw / 2, hbw / 2, hb_top - 1.6, hb_top)
     add("Sensor head board", hboard, C_PCB, "plastic", 13, "accessory", (0, 0, -120))
-    hcomp = _union([_bx(hx - 30, hx - 14, -10, 6, hb0 + 1.6, hb0 + 3.0), _bx(hx - 5, hx + 15, 12, 26, hb0 + 1.6, hb0 + 4.5),
-                    _bx(hx - 40, hx - 32, 18, 28, hb0 + 1.6, hb0 + 3.2), _bx(hx + 2, hx + 18, -28, -18, hb0 + 1.6, hb0 + 7.5)])
+    hso = _union([_zcyl(x0b + dx, sy * (hbw / 2 - 4), hb_top + P["hboard_standoff"] / 2, 2.5, P["hboard_standoff"])
+                  for dx in (4, hbl - 4) for sy in (-1, 1)])
+    add("Head board standoffs (4)", hso, "#B8860B", "metal", 18, "accessory", (0, 0, -100))
+    zl = hb_top - 1.6
+    hcomp = _union([_bx(hx - 40, hx - 24, -10, 6, zl - 1.4, zl), _bx(hx - 20, hx, 10, 24, zl - 3.0, zl),
+                    _bx(hx - 46, hx - 38, 16, 26, zl - 1.6, zl), _bx(hx - 8, hx + 8, -26, -16, zl - 5.5, zl)])
     add("Head board components", hcomp, C_CHIP, "plastic", 13, "accessory", (0, 0, -120))
 
     # 14 two sealed M12 expansion ports with caps
@@ -415,27 +480,13 @@ def product_parts(P=PARAMS):
     add("Expansion port cap", pc[0], C_BLACK, "rubber", 14, "accessory", (0, 0, -275))
     add("Expansion port cap (accent)", pc[1], C_ACCENT, "rubber", 14, "accessory", (0, 0, -275))
 
-    # 15 folded bracket and two band clamps with rubber liners and worm housings
-    brk = _bx(hx - 65, hx + 65, -15, 15, htop, az - ar)
-    brk -= _xcyl(hx, 0, az, ar + P["clamp_t"] - 0.01, 200)
-    brk -= _bx(hx - 32, hx + 32, -20, 20, htop + 3, az)
-    brk = _fillet_try(brk, _edges_par(brk, Axis.Y), [1.5, 1.0])
-    add("Head bracket (folded aluminum)", brk, C_METAL, "metal", 15, "accessory", (0, 0, -20))
-    bolts = _union([_hex_z(hx + sx * 22, sy * 8, htop + 3 + 1.5, 7.0, 3.0) for sx in (-1, 1) for sy in (-1, 1)])
-    add("Bracket bolts", bolts, C_STEEL, "metal", 16, "accessory", (0, 0, -20))
-    bands, liners, worms = [], [], []
-    for dx in (-P["clamp_pitch"] / 2, P["clamp_pitch"] / 2):
-        cxp = hx + dx
-        liners.append(_ring_x(cxp, 0, az, ar, ar + 1.5, P["clamp_w"]))
-        bands.append(_ring_x(cxp, 0, az, ar + 1.5, ar + 3.0, P["clamp_w"] - 6))
-        wy, wz = _polar(ar + 5.0, -60)
-        w = Pos(cxp, wy, az + wz) * Rot(-30, 0, 0) * Box(P["clamp_w"] - 4, 12, 6)
-        w = _fillet_try(w, w.edges().filter_by(Axis.X), [1.5, 1.0])
-        sy, sz = _polar(ar + 5.0, -60)
-        w += Pos(cxp + (P["clamp_w"] - 4) / 2, sy, az + sz) * Rot(0, 90, 0) * _hex_z(0, 0, 1.5, 6.0, 3.0)
-        worms.append(w)
-    add("Band clamps (stainless)", _union(bands) + _union(worms), C_STEEL, "metal", 15, "accessory", (0, 0, 45))
-    add("Clamp rubber liners", _union(liners), C_BLACK, "rubber", 15, "accessory", (0, 0, 45))
+    # 15 folded bracket (P10): web on the box top, flanges with band slots, 5 x 1.5 mm rubber strips on the flanges,
+    #    two band clamps through the slots and over the web; model.py shapes, with worm-screw heads added
+    add("Head bracket (folded aluminum)", MC["bracket"].shape, C_METAL, "metal", 15, "accessory", (0, 0, -20))
+    add("Bracket screws, sealing washers and nuts (4)", MC["brk_screws"].shape, C_STEEL, "metal", 16, "accessory", (0, 0, -20))
+    heads = _union([_hex_x(hx + dx + 8.5, 0, az + ar + P["band_t"] + 4, 6.0, 3.0) for dx in (-P["clamp_pitch"] / 2, P["clamp_pitch"] / 2)])
+    add("Band clamps (stainless)", MC["bands"].shape + heads, C_STEEL, "metal", 15, "accessory", (0, 0, 45))
+    add("Rubber strips on the bracket flanges", MC["liners"].shape, C_BLACK, "rubber", 15, "accessory", (0, 0, 45))
 
     # ============================================================ context (existing street furniture)
     rec = ref["Luminaire receptacle (reference)"]

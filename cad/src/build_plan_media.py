@@ -122,6 +122,9 @@ def sheets(only=None):
     import build123d as b
     M = made()
     base = dict(project="LampNode", date=DATE)
+    base2 = dict(project="LampNode", date="2026-10-02", rev="P2",
+                 revisions=[("P1", "Making sketch for the prototype build plan", DATE, "AC"),
+                            ("P2", "M12 pin numbers added to the notes (decision of 2026-10-02)", "2026-10-02", "AC")])
     out = []
     zc = D["mb0"]
 
@@ -235,7 +238,9 @@ def sheets(only=None):
                    "Fit each port from outside with its seal, nut inside, maker's torque.",
                    "Solder a 150 mm lead set to each port and fit a plug-in connector,",
                    "  so the lid can come off without a soldering iron.",
-                   "Check: each port seats flat on its seal; the lid gasket is unbroken."], **base))
+                   "Wire each port to the pinout proposed to FieldNode: pin 1 12 V supply,",
+                   "  pin 3 ground, pins 2 and 4 the RS-485 pair, pin 5 wake line.",
+                   "Check: each port seats flat on its seal; the lid gasket is unbroken."], **base2))
 
     if want(107):
         pl = C["hplate"].shape
@@ -252,8 +257,10 @@ def sheets(only=None):
                    "  The module sits 3 mm off the cradle on nylon spacers.",
                    "Head board: four M3 standoffs 6 mm long on the underside,",
                    "  at the board's corner holes, 4 mm in from each edge.",
+                   "Head board port outputs follow the M12 pinout: pin 1 12 V, pin 3 ground,",
+                   "  pins 2 and 4 RS-485, pin 5 wake; the lead plugs are marked 1 to 5.",
                    "Fit: four M3 screws into the bosses from below.",
-                   "Check: the radar face then tips 25 degrees down toward the street."], **base))
+                   "Check: the radar face then tips 25 degrees down toward the street."], **base2))
 
     if want(108):
         bk = C["bracket"].shape
@@ -611,7 +618,7 @@ def wiring():
     blk(86, 31, 12, 8, "Coil drive", "charge pump", "#0F766E")
     blk(103, 49, 15, 9, "Antenna", "flex strip,\nu.FL lead", RF)
     blk(103, 32, 15, 9, "M12 socket", "dome pad,\n5 pins", "#1F2937")
-    blk(72, 5, 15, 9, "Radar and ports", "radar module;\n2 x M12 ports", "#0EA5E9")
+    blk(72, 4.5, 15, 11.5, "Radar and ports", "radar module;\n2 x M12 ports\n(pinout at left)", "#0EA5E9")
     blk(91, 5, 15, 9, "Head board", "radar input,\nport switches", "#115E59")
     # mains side
     wire([(15, 53.5), (22, 53.5)], BRN); lab(18.5, 55.6, "line 1.0 mm²", BRN, "center")
@@ -632,10 +639,15 @@ def wiring():
     wire([(78, 31), (78, 23), (5, 23), (5, 38)], GRY, 1.2); lab(30, 23, "dimming to the low-voltage contacts, 0.25 mm²", GRY, "center")
     wire([(98, 53.5), (103, 53.5)], RF, 1.2)
     wire([(98, 50), (100.5, 50), (100.5, 36.5), (103, 36.5)], RED, 1.6); lab(100.0, 43, "12 V and\nserial", RED, "right")
-    wire([(110.5, 32), (110.5, 9.5), (106, 9.5)], RED, 1.6); lab(111.2, 22, "M12 cable 1 m:\n12 V, 0 V,\n2-wire serial", RED)
+    wire([(110.5, 32), (110.5, 9.5), (106, 9.5)], RED, 1.6); lab(111.2, 22, "M12 cable 1 m:\npin 1 12 V,\npin 3 0 V,\npins 2, 4\nRS-485", RED)
     wire([(91, 9.5), (87, 9.5)], BLU, 1.2)
     ax.text(2, 15, "Safety: the mains board carries up to 305 V. Build and check it unpowered;", fontsize=7.6, color="#B45309", fontweight="bold")
     ax.text(2, 12, "first power only through an isolating transformer and an RCD, dome on (section 6).", fontsize=7.6, color="#B45309", fontweight="bold")
+    ax.add_patch(FancyBboxPatch((54.5, 3.5), 13, 15, boxstyle="round,pad=0.3", fc="white", ec="#1F2937", lw=1.2))
+    ax.text(61.0, 18.0, "M12 pinout", ha="center", va="top", fontsize=7.6, fontweight="bold", color=INK)
+    ax.text(55.3, 15.2, "pin 1  12 V supply\npin 2  RS-485 (pair)\npin 3  0 V ground\npin 4  RS-485 (pair)\npin 5  wake line",
+            ha="left", va="top", fontsize=6.9, color=INK, linespacing=1.45)
+    ax.text(55.3, 6.6, "Ports use all five;\nthe cable uses 1 to 4.", ha="left", va="top", fontsize=5.6, color=MUT, linespacing=1.3)
     ax.text(2, 8.4, "Brown: line and load. Dark blue: neutral. Red: 12 V. Blue: data. Grey: control.", fontsize=7.2, color=MUT)
     out = OUT / "wiring.png"
     OUT.mkdir(parents=True, exist_ok=True)

@@ -3,7 +3,7 @@ doc_id: LPN-REQ-001
 title: LampNode requirements
 project: LampNode
 doc_type: Requirements
-version: "0.6"
+version: "0.7"
 status: Draft
 date: '2026-10-02'
 author: Amish Chadha
@@ -33,6 +33,10 @@ revisions:
   date: '2026-10-02'
   author: Amish Chadha
   change: 'R13 states the port pinout proposed to FieldNode on 2026-10-02 (LPN-DEC-001); no status changed'
+- version: "0.7"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: R15 airtime restated for the US915 band (400 ms dwell limit; status at SF9 or faster); no status changed
 ---
 
 # LampNode requirements
@@ -59,7 +63,7 @@ Table 1. Requirements
 | R12 | Fail safe | Lamp on at night if the controller, firmware or network fails; lamp on within 2 s of power-up at dusk without the network; open 0 to 10 V line gives full output | Circuit and firmware review | Met (design review): normally closed relay, toggling coil drive; driver open-line behavior to be confirmed |
 | R13 | Host other sensors | Two sealed 5-pole M12 expansion ports with the FieldNode sensor port pinout (as proposed to FieldNode on 2026-10-02, LPN-DEC-001: pin 1 supply, pin 3 ground, pins 2 and 4 a two-wire RS-485 pair, pin 5 a wake line; hosted sensors accept 5 to 12 V), 12 V SELV, 3 W total, limited by firmware to 2.5 W total when the controller interior is above 50 °C (LPN-DDR-002, O3), cable up to 10 m, whenever the luminaire feed is live. Hosted sensors that need power around the clock on cabinet-switched feeders bring their own storage, such as a FieldNode core (redefined, LPN-DDR-001 D7) | Power budget; design review | Met on paper with the firmware port limit: 3.40 W peak against 3.57 W at 64 °C (3.90 W against 3.55 W without it) |
 | R14 | Privacy | Presence only: no images, audio or personal identifiers are captured or leave the device; optional 15 min presence counts | Design review; open firmware | Met (design review) |
-| R15 | Secure and open | LoRaWAN 1.0.4 or later with AES-128 session keys; signed firmware; published payload format; works with any LoRaWAN network server. A TALQ bridge belongs to CityTwin, not to LampNode (redefined, LPN-DDR-001 D10) | Firmware sketch review | Met (design review): 25.7 s of airtime a day at SF9 |
+| R15 | Secure and open | LoRaWAN 1.0.4 or later with AES-128 session keys; signed firmware; published payload format; works with any LoRaWAN network server. A TALQ bridge belongs to CityTwin, not to LampNode (redefined, LPN-DDR-001 D10) | Firmware sketch review | Met (design review): US915 band; 25.7 s of airtime a day at SF9, with every message inside the 400 ms dwell limit per channel (status at SF9 or faster) |
 | R16 | Affordable | Controller and one sensor head $150 or less in parts at prototype quantities | Priced BOM (`bom/bom.csv`) | USD 143.00 for the constructable design, USD 7.00 under the USD 150 value-engineering target |
 
 Summary: 0 not met, 4 at risk (R3, R6, R7, R11), 11 met on paper, by design review or under the value-engineering target, 1 not verifiable at TRL 3 (R1). The `budget_usd` figure behind R16 is a value-engineering target, not a spending limit.

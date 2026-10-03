@@ -84,14 +84,19 @@ shunt dissipation at 4.44 A,0.03951,W
 "worst-case sum without calibration (1 % shunt, 0.2 % divider)",2.352,%
 24-byte status at SF7: time on air,82.18,ms
   96 per day at SF7,7.889,s/day
+24-byte status at SF8: time on air,143.9,ms
+  96 per day at SF8,13.81,s/day
 24-byte status at SF9: time on air,267.3,ms
   96 per day at SF9,25.66,s/day
 24-byte status at SF10: time on air,493.6,ms
   96 per day at SF10,47.38,s/day
-24-byte status at SF12: time on air,1974,ms
-  96 per day at SF12,189.5,s/day
-EU868 1 % duty cycle: off time after one SF9 status,26.46,s
+"US915 DR0 (SF10, 125 kHz): largest payload inside the 400 ms dwell limit",11,bytes
+"US915 DR1 (SF9, 125 kHz): largest payload inside the 400 ms dwell limit",53,bytes
+"US915 DR2 (SF8, 125 kHz): largest payload inside the 400 ms dwell limit",125,bytes
+"US915 DR3 (SF7, 125 kHz): largest payload inside the 400 ms dwell limit",242,bytes
+US915 SF9 or faster needed for the 24-byte status (SF10 time on air over 400 ms),93.57,ms over
 6-byte fault message at SF9,185.3,ms
+6-byte fault message at SF10 (DR0),329.7,ms
 "last-gasp energy at SF10, 22 dBm",0.1441,J
 "0.22 F supercapacitor, 5.0 to 3.6 V, usable",1.324,J
 last-gasp margin,9.191,x
@@ -163,5 +168,5 @@ R11,Environment,Interior 63 to 65 C at 45 C in sun (70 C rating); MOV 118 J at 5
 R12,Fail safe,"NC relay, open 0 to 10 V = full, coil needs a toggling drive, day decision needs clock AND light sensor",Met (design review)
 R13,Host other sensors,0.25 V drop at 10 m; ports limited to 2.5 W above 50 C inside (DDR-002): 3.40 W peak against 3.57 W at 64 C (3.90 W against 3.55 W without the limit),Met on paper (firmware port limit)
 R14,Privacy,"Doppler radar, no image; presence counts only",Met (design review)
-R15,Secure and open,"LoRaWAN 1.0.4, open payload; 25.7 s/day at SF9; TALQ in CityTwin (DDR item 10)",Met (design review)
+R15,Secure and open,"LoRaWAN 1.0.4, US915, open payload; 25.7 s/day at SF9, inside the 400 ms dwell limit; TALQ in CityTwin (DDR item 10)",Met (design review)
 R16,Affordable,USD 143.00 against the USD 150 value-engineering target,Under the target by USD 7.00

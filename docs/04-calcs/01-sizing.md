@@ -3,9 +3,9 @@ doc_id: LPN-CAL-001
 title: LampNode sizing calculations
 project: LampNode
 doc_type: Calculation note
-version: "0.3"
+version: "0.4"
 status: Draft
-date: '2026-10-01'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -21,6 +21,10 @@ revisions:
   date: '2026-10-01'
   author: Amish Chadha
   change: Mass and cost updated for the constructable design (LPN-DDR-003); budget reported as a value-engineering target
+- version: "0.4"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: Radio section rechecked for the US915 band decided on 2026-10-02 (400 ms dwell limit per channel instead of the EU868 duty cycle); SF12 row replaced by SF8; no requirement status changed
 ---
 
 # LampNode sizing calculations
@@ -118,14 +122,14 @@ With a one-point calibration at build the worst case is 1.65 %, inside ±2 %. Wi
 
 *Table 4. Time on air of a 24-byte status message (13 bytes of LoRaWAN overhead, 125 kHz, coding rate 4/5).*
 
-| Spreading factor | Per message | 96 per day |
-| --- | --- | --- |
-| SF7 | 82 ms | 7.9 s |
-| SF9 | 267 ms | 25.7 s |
-| SF10 | 494 ms | 47.4 s |
-| SF12 | 1,974 ms | 189.5 s |
+| Spreading factor (US915 data rate) | Per message | 96 per day | Inside 400 ms dwell limit |
+| --- | --- | --- | --- |
+| SF7 (DR3) | 82 ms | 7.9 s | Yes |
+| SF8 (DR2) | 144 ms | 13.8 s | Yes |
+| SF9 (DR1) | 267 ms | 25.7 s | Yes |
+| SF10 (DR0) | 494 ms | 47.4 s | **No**, 94 ms over |
 
-TRL 2 gave about 0.2 s and 20 s a day at SF9; the full LoRaWAN overhead makes it 267 ms and 25.7 s. Under the EU868 1 % duty cycle each SF9 status message needs 26 s of silence, far less than the 15 min interval. On a public network with a 30 s daily fair-use limit, lamps at SF10 or slower need a longer interval, as FieldNode found; on a private TwinKit gateway only the duty cycle applies. A 6-byte fault message takes 185 ms at SF9.
+The first partner is a US partner on the 915 MHz band (decided 2026-10-02), so the radio limits are those of the US915 plan, not the EU868 1 % duty cycle that this note used before. US915 has no duty cycle, but the FCC limits a transmission to 400 ms on one channel. The largest message that fits inside 400 ms is 11 bytes at SF10 (DR0), 53 bytes at SF9 (DR1), 125 bytes at SF8 and 242 bytes at SF7. The 24-byte status message therefore has to go at SF9 (DR1) or faster, where it takes 267 ms and 25.7 s of airtime a day (TRL 2 gave about 0.2 s and 20 s a day before the full 13 bytes of LoRaWAN overhead were counted). A lamp that can only reach its gateway at SF10 (DR0) cannot send the 24-byte status in one message: it would have to send a status of 11 bytes or fewer, or be given a closer gateway. The 6-byte fault message fits at every rate (330 ms at SF10). SF11 and SF12 do not exist at 125 kHz in US915. On a public network with a 30 s daily fair-use limit, lamps at SF10 or slower need a longer interval, as FieldNode found; on a private TwinKit gateway only the dwell limit applies. A 6-byte fault message takes 185 ms at SF9.
 
 For the last message after mains loss, one transmission at SF10 and 22 dBm with two receive windows needs about 0.144 J. A 0.22 F supercapacitor discharged from 5.0 to 3.6 V gives 1.32 J, a margin of 9 times, and recharges in 55 s at 20 mA. R9 is met by design review. R15 is met by design review with the TALQ bridge moved to CityTwin (LPN-DDR-001 item 10).
 
@@ -174,7 +178,7 @@ Value-engineering target: USD 150 (`budget_usd`, a hypothetical control target, 
 | R12 | Fail safe | Normally closed relay; open 0 to 10 V line gives full output; coil drive needs a toggling signal; day needs both clock and light sensor | Met (design review) |
 | R13 | Host other sensors | 0.25 V drop at 10 m; ports limited to 2.5 W above 50 °C inside: 3.40 W peak against 3.57 W at 64 °C (3.90 W against 3.55 W without the limit) | Met on paper (firmware port limit) |
 | R14 | Privacy | Doppler radar, no image; presence counts only | Met (design review) |
-| R15 | Secure and open | LoRaWAN 1.0.4, published payload; 25.7 s a day at SF9; TALQ in CityTwin | Met (design review) |
+| R15 | Secure and open | LoRaWAN 1.0.4, US915, published payload; 25.7 s a day at SF9, inside the 400 ms dwell limit; TALQ in CityTwin | Met (design review) |
 | R16 | Affordable | USD 143.00 against the USD 150 value-engineering target | Under the target by USD 7.00 |
 
 Summary: 0 not met, 4 at risk, 11 met on paper or by design review, 1 not verifiable at TRL 3.
